@@ -10,7 +10,7 @@ Describe a space in a sentence and CrowdDirector lays out its zones and populate
 type instructions at the crowd — *"the coffee machine is broken"*, *"staff leave first"* — and every
 agent responds according to its own needs, role and relationships.
 
-A 442,000-parameter graph policy makes the per-agent decisions locally, at roughly **0.7 ms per agent
+A graph policy makes the per-agent decisions locally, at roughly **0.7 ms per agent
 decision** with **no API call per tick**. Your navigation, collision handling and animation stay
 exactly as they are: CrowdDirector chooses *what* each agent should do and *where*, and leaves the
 execution to you.
