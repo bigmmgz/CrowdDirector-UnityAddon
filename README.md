@@ -8,10 +8,6 @@ Natural-language crowd direction for Unity, powered by a trained relational grap
 
 ![A generated venue running under CrowdDirector, with the crowd gathered in the event hall](docs/screenshot.png)
 
-<sub>A venue generated from one sentence: reception, event hall, food counter, reading room, music
-room, gallery and the rest, laid out gap-free. Every agent picks its own target each tick — here most
-of the crowd has converged on the event hall, while others read, browse the gallery or rest.</sub>
-
 Describe a space in a sentence and CrowdDirector lays out its zones and populates it. While it runs,
 type instructions at the crowd — *"the coffee machine is broken"*, *"staff leave first"* — and every
 agent responds according to its own needs, role and relationships.
