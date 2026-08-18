@@ -1,0 +1,16 @@
+# Normalise line endings across the platforms Unity and Python both run on.
+* text=auto
+
+*.py      text eol=lf
+*.cs      text eol=lf
+*.json    text eol=lf
+*.asmdef  text eol=lf
+*.meta    text eol=lf
+*.md      text eol=lf
+*.sh      text eol=lf
+
+# Windows launcher must keep CRLF or cmd.exe mis-parses it.
+*.bat     text eol=crlf
+
+# The checkpoint is a byte-exact artefact.
+*.pt      -text -diff

@@ -1,0 +1,13 @@
+{
+  "name": "CrowdDirector.Client",
+  "rootNamespace": "CrowdDirector",
+  "references": [ "Unity.Plastic.Newtonsoft.Json", "Newtonsoft.Json" ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": []
+}

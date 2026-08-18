@@ -1,0 +1,35 @@
+# ── Python sidecar ────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Runtime artefacts the server creates on first run. EventLog is a live audit trail,
+# not source; the caches are regenerable and can contain raw model output.
+server/EventLog/
+*_cache/
+sprite_cache/
+lpc_cache/
+llm_cache/
+logs/
+*.log
+
+# ── Unity ─────────────────────────────────────────────────────────────────────
+# .meta files ARE committed: a UPM package needs stable GUIDs across installs.
+Library/
+Temp/
+Obj/
+Build/
+Logs/
+UserSettings/
+*.csproj
+*.sln
+*.user
+
+# ── editors / OS ──────────────────────────────────────────────────────────────
+.vs/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

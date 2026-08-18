@@ -1,0 +1,1 @@
+"""ecgp.teacher subpackage."""

@@ -1,0 +1,20 @@
+# CrowdDirector sidecar server.
+#
+# torch is CPU-only here on purpose: the policy is 442k parameters and measurably faster on CPU
+# than on GPU at this size, and a CPU wheel is a far smaller download for someone who just wants
+# to try the add-on.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch>=2.6
+numpy>=2.0
+
+# The websocket transport to Unity.
+websockets>=12.0
+
+# Scene generation and instruction interpretation. Needed only for those two features - the
+# per-tick director itself makes no API call and runs without a key.
+anthropic>=0.40
+
+# Optional: sprite generation. The server checks sprite_gen.is_available() and degrades to
+# library sprites when these are absent, so you can skip them entirely.
+# google-genai>=0.3
+# Pillow>=10.0
