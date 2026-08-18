@@ -5,7 +5,7 @@
   "description": "Natural-language crowd direction for Unity. Implement ICrowdAgent on your own agents and the director assigns each one a target and an action every tick, driven by a trained graph policy running in a local sidecar server.",
   "unity": "2021.3",
   "keywords": [ "crowd", "simulation", "ai", "agents" ],
-  "author": { "name": "Trinity College Dublin" },
+  "author": { "name": "bigmmgz", "url": "https://github.com/bigmmgz" },
   "dependencies": {
     "com.unity.nuget.newtonsoft-json": "3.2.2"
   }
