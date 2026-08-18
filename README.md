@@ -73,13 +73,26 @@ Or add it to `Packages/manifest.json` directly:
 ```bash
 git clone https://github.com/bigmmgz/CrowdDirector-UnityAddon.git
 cd CrowdDirector-UnityAddon/server
-
-export ANTHROPIC_API_KEY=sk-ant-...     # Windows: set ANTHROPIC_API_KEY=sk-ant-...
 ./start.sh                              # Windows: start.bat
 ```
 
 The first run creates a virtual environment and installs PyTorch. It then serves on
 `ws://localhost:8765`, which is where the Unity client connects by default.
+
+No API key is required to run the director. Set one only if you want to generate scenes from a
+description or issue free-text instructions:
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...     # Windows: set ANTHROPIC_API_KEY=sk-ant-...
+```
+
+### 3. Run the sample
+
+**Package Manager → CrowdDirector Client → Samples → Minimal Crowd → Import.** Then add
+**Minimal Crowd Demo** to an empty GameObject in an empty scene and press Play.
+
+It loads the prebuilt `demo` scene — 11 zones, 28 agents, no API key — and builds the camera, the
+crowd and the zone floors at runtime, so there is nothing to wire up.
 
 ---
 
@@ -175,7 +188,8 @@ across ticks until cleared.
 |---|---|
 | `RegisterAgent(ICrowdAgent)` | Add an agent to the directed crowd |
 | `UnregisterAgent(ICrowdAgent)` | Remove an agent and notify the server |
-| `GenerateScene(string)` | Build zones and agent types from a description |
+| `LoadScene(string)` | Load a prebuilt scene by key. No API key needed; repeatable across runs |
+| `GenerateScene(string)` | Build zones and agent types from a description (needs a key) |
 | `DescribeEvent(string)` | Issue a free-text instruction |
 | `TriggerEvent(string, string)` | `fire_alarm`, `closing_time`, `music_starts`, `new_arrival`, `all_clear` |
 | `ClearEvent()` | Cancel the active event and any standing orders |

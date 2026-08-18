@@ -1,0 +1,871 @@
+{
+  "scene_name": "Commons Demo",
+  "theme": "home",
+  "scene_theme_text": "A long hand-built commons: restroom, stage, food hall, gym, library and guest room along the top; work area, lobby, cafe, music hall and garden below. One way in and out.",
+  "scene_family": "indoor",
+  "prebuilt_key": "demo",
+  "prebaked_level": true,
+  "behaviour_notes": "Eleven connected rooms off a single south entrance. Each room has one or two things agents can actually use; the rest of the furniture is scenery they walk around. Staff work the food hall and cafe.",
+  "narrative": "The commons opens for the day. One door in, eleven rooms to find something to do in.",
+  "zones": [
+    {
+      "id": "restroom",
+      "label": "Restroom",
+      "zone_type": "restroom",
+      "x": -11.4,
+      "y": 0.0,
+      "w": 6.5,
+      "h": 5.5,
+      "color": "#9fd6cc",
+      "allowed_actions": [
+        "relieve",
+        "wash",
+        "browse"
+      ]
+    },
+    {
+      "id": "event_hall",
+      "label": "Event Hall",
+      "zone_type": "stage",
+      "x": -4.9,
+      "y": 0.0,
+      "w": 9.29,
+      "h": 5.5,
+      "color": "#e8d9a0",
+      "allowed_actions": [
+        "observe",
+        "talk",
+        "sit"
+      ]
+    },
+    {
+      "id": "food_counter",
+      "label": "Food Counter",
+      "zone_type": "counter",
+      "x": 4.39,
+      "y": 0.0,
+      "w": 7.01,
+      "h": 5.5,
+      "color": "#f2d7a8",
+      "allowed_actions": [
+        "eat",
+        "drink",
+        "pay",
+        "refill"
+      ]
+    },
+    {
+      "id": "reading_room",
+      "label": "Reading Room",
+      "zone_type": "reading",
+      "x": 11.4,
+      "y": 0.0,
+      "w": 7.6,
+      "h": 5.5,
+      "color": "#e8d2a6",
+      "allowed_actions": [
+        "activity",
+        "browse",
+        "observe"
+      ]
+    },
+    {
+      "id": "printer_room",
+      "label": "Printer Room",
+      "zone_type": "office",
+      "x": 19.0,
+      "y": 0.0,
+      "w": 7.6,
+      "h": 5.5,
+      "color": "#e2cf9e",
+      "allowed_actions": [
+        "work",
+        "read",
+        "observe"
+      ]
+    },
+    {
+      "id": "bed_room",
+      "label": "Bed Room",
+      "zone_type": "bedroom",
+      "x": 26.6,
+      "y": 0.0,
+      "w": 7.6,
+      "h": 5.5,
+      "color": "#bdccff",
+      "allowed_actions": [
+        "rest",
+        "sit",
+        "sleep"
+      ]
+    },
+    {
+      "id": "lounge",
+      "label": "Lounge",
+      "zone_type": "lounge",
+      "x": -11.4,
+      "y": -5.5,
+      "w": 6.8,
+      "h": 5.5,
+      "color": "#b9c4d6",
+      "allowed_actions": [
+        "work",
+        "sit",
+        "rest"
+      ]
+    },
+    {
+      "id": "reception",
+      "label": "Reception",
+      "zone_type": "entrance",
+      "x": -4.6,
+      "y": -5.5,
+      "w": 9.0,
+      "h": 5.5,
+      "color": "#cfcfcf",
+      "allowed_actions": [
+        "talk",
+        "pay",
+        "observe",
+        "work"
+      ]
+    },
+    {
+      "id": "drink_bar",
+      "label": "Drink Bar",
+      "zone_type": "bar",
+      "x": 4.4,
+      "y": -5.5,
+      "w": 7.0,
+      "h": 5.5,
+      "color": "#d8b9a0",
+      "allowed_actions": [
+        "drink",
+        "eat",
+        "sit",
+        "pay",
+        "work"
+      ]
+    },
+    {
+      "id": "music_room",
+      "label": "Music Room",
+      "zone_type": "activity",
+      "x": 11.4,
+      "y": -5.5,
+      "w": 11.4,
+      "h": 5.5,
+      "color": "#fad1bd",
+      "allowed_actions": [
+        "sit",
+        "observe",
+        "talk"
+      ]
+    },
+    {
+      "id": "gallery",
+      "label": "Gallery",
+      "zone_type": "museum",
+      "x": 22.8,
+      "y": -5.5,
+      "w": 11.4,
+      "h": 5.5,
+      "color": "#a8db94",
+      "allowed_actions": [
+        "sit",
+        "rest",
+        "observe",
+        "talk"
+      ]
+    }
+  ],
+  "agent_types": [
+    {
+      "type": "barista",
+      "label": "Barista",
+      "color": "#8b5a2b",
+      "social_unit": "solo",
+      "personality_type": "introvert",
+      "role": "barista",
+      "outfit_category": "apron",
+      "count": 2,
+      "initial_needs": {
+        "hunger": 30,
+        "thirst": 40,
+        "bladder": 20,
+        "energy": 70,
+        "stress": 25,
+        "loneliness": 30,
+        "groupAffinity": 40,
+        "status": 55,
+        "curiosity": 35
+      }
+    },
+    {
+      "type": "server_staff",
+      "label": "Server",
+      "color": "#a0522d",
+      "social_unit": "solo",
+      "personality_type": "extrovert",
+      "role": "waiter",
+      "outfit_category": "apron",
+      "count": 2,
+      "initial_needs": {
+        "hunger": 32,
+        "thirst": 42,
+        "bladder": 22,
+        "energy": 68,
+        "stress": 28,
+        "loneliness": 28,
+        "groupAffinity": 45,
+        "status": 52,
+        "curiosity": 38
+      }
+    },
+    {
+      "type": "regular",
+      "label": "Regular",
+      "color": "#4a76c4",
+      "social_unit": "solo",
+      "personality_type": "introvert",
+      "role": "casual_young",
+      "outfit_category": "casual",
+      "count": 8,
+      "initial_needs": {
+        "hunger": 48,
+        "thirst": 55,
+        "bladder": 35,
+        "energy": 60,
+        "stress": 30,
+        "loneliness": 45,
+        "groupAffinity": 35,
+        "status": 40,
+        "curiosity": 50
+      }
+    },
+    {
+      "type": "friends_group",
+      "label": "Friends",
+      "color": "#c45a8b",
+      "social_unit": "pair",
+      "personality_type": "extrovert",
+      "role": "casual_young",
+      "outfit_category": "casual",
+      "count": 6,
+      "initial_needs": {
+        "hunger": 45,
+        "thirst": 58,
+        "bladder": 30,
+        "energy": 65,
+        "stress": 25,
+        "loneliness": 55,
+        "groupAffinity": 70,
+        "status": 42,
+        "curiosity": 55
+      }
+    },
+    {
+      "type": "remote_worker",
+      "label": "Remote Worker",
+      "color": "#3f7f6f",
+      "social_unit": "solo",
+      "personality_type": "introvert",
+      "role": "business_person",
+      "outfit_category": "smart",
+      "count": 6,
+      "initial_needs": {
+        "hunger": 42,
+        "thirst": 50,
+        "bladder": 32,
+        "energy": 55,
+        "stress": 45,
+        "loneliness": 38,
+        "groupAffinity": 25,
+        "status": 65,
+        "curiosity": 40
+      }
+    },
+    {
+      "type": "visitor_family",
+      "label": "Family",
+      "color": "#c98b3f",
+      "social_unit": "family",
+      "personality_type": "extrovert",
+      "role": "tourist",
+      "outfit_category": "casual",
+      "count": 4,
+      "initial_needs": {
+        "hunger": 52,
+        "thirst": 52,
+        "bladder": 40,
+        "energy": 58,
+        "stress": 28,
+        "loneliness": 35,
+        "groupAffinity": 80,
+        "status": 38,
+        "curiosity": 62
+      }
+    }
+  ],
+  "scene_spec": {
+    "scene_theme_text": "commons demo",
+    "scene_family": "indoor",
+    "template": null,
+    "selected_kits": [
+      "CafeKit",
+      "HomeKit"
+    ],
+    "style_tags": [
+      "commons",
+      "cafe",
+      "home"
+    ],
+    "required_affordances": [
+      "eat",
+      "drink",
+      "pay",
+      "sit",
+      "rest",
+      "work",
+      "relieve",
+      "wash",
+      "observe",
+      "browse",
+      "talk",
+      "read"
+    ],
+    "smart_objects": [
+      {
+        "smart_object_id": "so_toilet",
+        "display_name": "Toilet",
+        "zone_id": "restroom",
+        "prop_id": "RR_toilet",
+        "object_type": "RR_toilet",
+        "prop_class": "sanitation",
+        "support": "FLOOR",
+        "functional_role": "sanitation",
+        "affordance": "relieve",
+        "affordances": [
+          "relieve"
+        ],
+        "need_effects": {
+          "bladder": -70
+        },
+        "capacity": 2,
+        "interaction_duration": 4,
+        "pos_x": -9.9,
+        "pos_y": 3.75,
+        "fixed_pos": true,
+        "invisible": true,
+        "follow_on": "so_sink",
+        "stand_x": -9.9,
+        "stand_y": 3.75,
+        "sit_dir": "down"
+      },
+      {
+        "smart_object_id": "so_sink",
+        "display_name": "Sink",
+        "zone_id": "restroom",
+        "prop_id": "RR_sink_1",
+        "object_type": "RR_sink_1",
+        "prop_class": "sanitation",
+        "support": "FLOOR",
+        "functional_role": "sanitation",
+        "affordance": "relieve",
+        "affordances": [
+          "relieve"
+        ],
+        "need_effects": {
+          "stress": -10
+        },
+        "capacity": 2,
+        "interaction_duration": 2,
+        "pos_x": -6.58,
+        "pos_y": 3.865,
+        "fixed_pos": true,
+        "invisible": true,
+        "stand_x": -6.58,
+        "stand_y": 3.55,
+        "sit_dir": "up",
+        "stand_to_use": true
+      },
+      {
+        "smart_object_id": "so_mic",
+        "display_name": "Microphone",
+        "zone_id": "event_hall",
+        "prop_id": "Mic",
+        "object_type": "Mic",
+        "prop_class": "furniture",
+        "support": "FLOOR",
+        "functional_role": "fixture",
+        "affordance": "talk",
+        "affordances": [
+          "talk"
+        ],
+        "need_effects": {
+          "loneliness": -24,
+          "status": -14,
+          "groupAffinity": -10
+        },
+        "capacity": 6,
+        "interaction_duration": 5,
+        "pos_x": 2.0,
+        "pos_y": 1.695,
+        "fixed_pos": true,
+        "invisible": true
+      },
+      {
+        "smart_object_id": "so_chair_1",
+        "display_name": "Chair 1",
+        "zone_id": "lounge",
+        "prop_id": "Chair_1",
+        "object_type": "Chair_1",
+        "prop_class": "seat",
+        "support": "SEAT",
+        "functional_role": "seat",
+        "affordance": "sit",
+        "affordances": [
+          "sit"
+        ],
+        "need_effects": {
+          "energy": 16,
+          "stress": -10
+        },
+        "capacity": 2,
+        "interaction_duration": 5,
+        "pos_x": -7.74,
+        "pos_y": -5.085,
+        "fixed_pos": true,
+        "invisible": true,
+        "stand_x": -7.59,
+        "stand_y": -4.43,
+        "sit_dir": "right"
+      },
+      {
+        "smart_object_id": "so_chair_2",
+        "display_name": "Chair 2",
+        "zone_id": "lounge",
+        "prop_id": "Chair_2",
+        "object_type": "Chair_2",
+        "prop_class": "seat",
+        "support": "SEAT",
+        "functional_role": "seat",
+        "affordance": "sit",
+        "affordances": [
+          "sit"
+        ],
+        "need_effects": {
+          "energy": 16,
+          "stress": -10
+        },
+        "capacity": 2,
+        "interaction_duration": 5,
+        "pos_x": -5.6533,
+        "pos_y": -5.0813,
+        "fixed_pos": true,
+        "invisible": true,
+        "stand_x": -5.82,
+        "stand_y": -4.43,
+        "sit_dir": "left"
+      },
+      {
+        "smart_object_id": "so_reception",
+        "display_name": "Reception Desk",
+        "zone_id": "reception",
+        "prop_id": "ReceptionDesk",
+        "object_type": "ReceptionDesk",
+        "prop_class": "workstation",
+        "support": "FLOOR",
+        "functional_role": "workstation",
+        "affordance": "talk",
+        "affordances": [
+          "talk",
+          "work"
+        ],
+        "need_effects": {
+          "loneliness": -26,
+          "groupAffinity": -16,
+          "curiosity": -8
+        },
+        "capacity": 4,
+        "interaction_duration": 4,
+        "pos_x": 0.05,
+        "pos_y": -2.6,
+        "fixed_pos": true,
+        "invisible": true,
+        "stand_x": 0.05,
+        "stand_y": -4.65,
+        "sit_dir": "up",
+        "post_slots": [
+          [
+            -0.45,
+            -1.95
+          ],
+          [
+            0.55,
+            -1.95
+          ],
+          [
+            -1.6,
+            -2.65
+          ],
+          [
+            1.55,
+            -2.65
+          ]
+        ]
+      },
+      {
+        "smart_object_id": "so_coffee_machine",
+        "display_name": "Coffee Machine",
+        "zone_id": "drink_bar",
+        "prop_id": "CoffeeMachine",
+        "object_type": "CoffeeMachine",
+        "prop_class": "food_drink",
+        "support": "FLOOR",
+        "functional_role": "provider",
+        "affordance": "drink",
+        "affordances": [
+          "drink"
+        ],
+        "need_effects": {
+          "thirst": -38,
+          "energy": 10
+        },
+        "capacity": 4,
+        "interaction_duration": 3,
+        "pos_x": 9.3576,
+        "pos_y": -1.2632,
+        "fixed_pos": true,
+        "invisible": true
+      },
+      {
+        "smart_object_id": "so_water",
+        "display_name": "Water Station",
+        "zone_id": "drink_bar",
+        "prop_id": "water station",
+        "object_type": "water station",
+        "prop_class": "food_drink",
+        "support": "COUNTERTOP",
+        "functional_role": "provider",
+        "affordance": "drink",
+        "affordances": [
+          "drink"
+        ],
+        "need_effects": {
+          "thirst": -38
+        },
+        "capacity": 4,
+        "interaction_duration": 3,
+        "pos_x": 6.1156,
+        "pos_y": -4.1836,
+        "fixed_pos": true,
+        "invisible": true,
+        "stock": 4,
+        "stock_props": [
+          "water_1",
+          "water_2",
+          "water_3",
+          "water_4"
+        ],
+        "stand_x": 6.18,
+        "stand_y": -4.07
+      },
+      {
+        "smart_object_id": "so_bookshelf",
+        "display_name": "Bookshelf",
+        "zone_id": "reading_room",
+        "prop_id": "Classroom_and_Library_Singles_48x48_47",
+        "object_type": "Classroom_and_Library_Singles_48x48_47",
+        "prop_class": "furniture",
+        "support": "FLOOR",
+        "functional_role": "surface",
+        "affordance": "observe",
+        "affordances": [
+          "observe"
+        ],
+        "need_effects": {
+          "curiosity": -24,
+          "stress": -6
+        },
+        "capacity": 3,
+        "interaction_duration": 5,
+        "pos_x": 15.1288,
+        "pos_y": 3.4617,
+        "fixed_pos": true,
+        "invisible": true,
+        "stand_x": 15.34,
+        "stand_y": 2.78
+      },
+      {
+        "smart_object_id": "so_bench_1",
+        "display_name": "Bench 1",
+        "zone_id": "music_room",
+        "prop_id": "Bench_1",
+        "object_type": "Bench_1",
+        "prop_class": "seat",
+        "support": "SEAT",
+        "functional_role": "seat",
+        "affordance": "sit",
+        "affordances": [
+          "sit"
+        ],
+        "need_effects": {
+          "energy": 16,
+          "stress": -12
+        },
+        "capacity": 4,
+        "interaction_duration": 5,
+        "pos_x": 14.67,
+        "pos_y": -4.18,
+        "fixed_pos": true,
+        "invisible": true,
+        "stand_x": 14.67,
+        "stand_y": -4.05,
+        "sit_dir": "down"
+      },
+      {
+        "smart_object_id": "so_bench_2",
+        "display_name": "Bench 2",
+        "zone_id": "music_room",
+        "prop_id": "Bench_2",
+        "object_type": "Bench_2",
+        "prop_class": "seat",
+        "support": "SEAT",
+        "functional_role": "seat",
+        "affordance": "sit",
+        "affordances": [
+          "sit"
+        ],
+        "need_effects": {
+          "energy": 16,
+          "stress": -12
+        },
+        "capacity": 4,
+        "interaction_duration": 5,
+        "pos_x": 17.9,
+        "pos_y": -4.15,
+        "fixed_pos": true,
+        "invisible": true,
+        "stand_x": 17.9,
+        "stand_y": -4.02,
+        "sit_dir": "down"
+      },
+      {
+        "smart_object_id": "so_pc",
+        "display_name": "Computer",
+        "zone_id": "printer_room",
+        "prop_id": "PC",
+        "object_type": "PC",
+        "prop_class": "workstation",
+        "support": "FLOOR",
+        "functional_role": "workstation",
+        "affordance": "work",
+        "affordances": [
+          "work"
+        ],
+        "need_effects": {
+          "status": -20,
+          "curiosity": -10,
+          "energy": -8
+        },
+        "capacity": 1,
+        "interaction_duration": 6,
+        "pos_x": 20.23,
+        "pos_y": 4.055,
+        "fixed_pos": true,
+        "invisible": true
+      },
+      {
+        "smart_object_id": "so_printer",
+        "display_name": "Printer",
+        "zone_id": "printer_room",
+        "prop_id": "Printer",
+        "object_type": "Printer",
+        "prop_class": "workstation",
+        "support": "FLOOR",
+        "functional_role": "workstation",
+        "affordance": "work",
+        "affordances": [
+          "work"
+        ],
+        "need_effects": {
+          "status": -12,
+          "energy": -6
+        },
+        "capacity": 2,
+        "interaction_duration": 3,
+        "pos_x": 22.3798,
+        "pos_y": 3.6603,
+        "fixed_pos": true,
+        "invisible": true,
+        "stand_x": 22.02,
+        "stand_y": 3.41,
+        "sit_dir": "up"
+      },
+      {
+        "smart_object_id": "so_bed",
+        "display_name": "Bed",
+        "zone_id": "bed_room",
+        "prop_id": "Bed",
+        "object_type": "Bed",
+        "prop_class": "seat",
+        "support": "SEAT",
+        "functional_role": "seat",
+        "affordance": "rest",
+        "affordances": [
+          "rest"
+        ],
+        "need_effects": {
+          "energy": 42,
+          "stress": -20
+        },
+        "capacity": 1,
+        "interaction_duration": 6,
+        "pos_x": 32.99,
+        "pos_y": 1.9,
+        "fixed_pos": true,
+        "invisible": true,
+        "allowed_roles": [
+          "family"
+        ],
+        "stand_x": 33.14,
+        "stand_y": 2.05,
+        "sit_dir": "down"
+      },
+      {
+        "smart_object_id": "so_art_1",
+        "display_name": "Artwork 1",
+        "zone_id": "gallery",
+        "prop_id": "Art_1",
+        "object_type": "Art_1",
+        "prop_class": "furniture",
+        "support": "FLOOR",
+        "functional_role": "fixture",
+        "affordance": "observe",
+        "affordances": [
+          "observe"
+        ],
+        "need_effects": {
+          "curiosity": -22,
+          "status": -8
+        },
+        "capacity": 4,
+        "interaction_duration": 4,
+        "pos_x": 24.0423,
+        "pos_y": -4.896,
+        "fixed_pos": true,
+        "invisible": true
+      },
+      {
+        "smart_object_id": "so_art_2",
+        "display_name": "Artwork 2",
+        "zone_id": "gallery",
+        "prop_id": "Art_2",
+        "object_type": "Art_2",
+        "prop_class": "furniture",
+        "support": "FLOOR",
+        "functional_role": "fixture",
+        "affordance": "observe",
+        "affordances": [
+          "observe"
+        ],
+        "need_effects": {
+          "curiosity": -22,
+          "status": -8
+        },
+        "capacity": 4,
+        "interaction_duration": 4,
+        "pos_x": 26.18,
+        "pos_y": -5.0014,
+        "fixed_pos": true,
+        "invisible": true
+      },
+      {
+        "smart_object_id": "so_food_counter_1",
+        "display_name": "Food Counter 1",
+        "zone_id": "food_counter",
+        "prop_id": "FB_counter_2",
+        "object_type": "FB_counter_2",
+        "prop_class": "food_drink",
+        "support": "COUNTERTOP",
+        "functional_role": "provider",
+        "affordance": "eat",
+        "affordances": [
+          "eat"
+        ],
+        "need_effects": {
+          "hunger": -38
+        },
+        "capacity": 4,
+        "interaction_duration": 4,
+        "pos_x": 5.85,
+        "pos_y": 3.5733,
+        "fixed_pos": true,
+        "invisible": true,
+        "stock": 2,
+        "stock_props": [
+          "Food_4",
+          "Food_5"
+        ]
+      },
+      {
+        "smart_object_id": "so_food_counter_2",
+        "display_name": "Food Counter 2",
+        "zone_id": "food_counter",
+        "prop_id": "FB_counter_2 (1)",
+        "object_type": "FB_counter_2 (1)",
+        "prop_class": "food_drink",
+        "support": "COUNTERTOP",
+        "functional_role": "provider",
+        "affordance": "eat",
+        "affordances": [
+          "eat"
+        ],
+        "need_effects": {
+          "hunger": -38
+        },
+        "capacity": 4,
+        "interaction_duration": 4,
+        "pos_x": 8.14,
+        "pos_y": 3.5533,
+        "fixed_pos": true,
+        "invisible": true,
+        "stock": 3,
+        "stock_props": [
+          "Food_1",
+          "Food_2",
+          "Food_3"
+        ]
+      },
+      {
+        "smart_object_id": "so_piano_chair",
+        "display_name": "Piano Stool",
+        "zone_id": "music_room",
+        "prop_id": "pianochair",
+        "object_type": "pianochair",
+        "prop_class": "seat",
+        "support": "SEAT",
+        "functional_role": "seat",
+        "affordance": "sit",
+        "affordances": [
+          "sit"
+        ],
+        "need_effects": {
+          "stress": -14,
+          "loneliness": -18,
+          "status": -12
+        },
+        "capacity": 1,
+        "interaction_duration": 30,
+        "pos_x": 20.59,
+        "pos_y": -4.59,
+        "fixed_pos": true,
+        "invisible": true,
+        "stand_x": 20.59,
+        "stand_y": -4.66,
+        "sit_dir": "up"
+      }
+    ]
+  }
+}

@@ -298,6 +298,25 @@ namespace CrowdDirector
             });
         }
 
+        /// <summary>
+        /// Load a prebuilt scene by key from the server's prebuilt_scenes/ folder. Unlike
+        /// GenerateScene this designs nothing, so it needs NO API key - which makes it the way to
+        /// try the package, and the reliable choice for a recorded demo where you want the same
+        /// floor plan every take. "demo" ships with the server.
+        /// </summary>
+        public void LoadScene(string key)
+        {
+            _sceneReady = false;
+            SendJson(new
+            {
+                type = "load_prebuilt",
+                key,
+                render_mode = "library",
+                director_mode = "dsag",
+                behavior_engine = "ecgp",
+            });
+        }
+
         /// <summary>Free-text instruction - "the coffee machine is broken", "everyone leave".
         /// Compiled against the live scene into a persistent directive.</summary>
         public void DescribeEvent(string description)
