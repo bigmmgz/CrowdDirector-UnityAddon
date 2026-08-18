@@ -26,7 +26,7 @@ from ..training import checkpoint as ckpt
 
 _SAMPLE = os.environ.get("ECGP_SAMPLE", "1") == "1"
 _TEMP = float(os.environ.get("ECGP_TEMP", "1.0"))
-log = logging.getLogger("ecgp.model")
+log = logging.getLogger("policy.model")
 
 
 class ECGPPolicy:

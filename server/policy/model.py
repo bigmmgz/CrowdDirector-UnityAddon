@@ -63,7 +63,7 @@ class ECGPNet(nn.Module):
         """`relation_names` and `option_feat_dim` default to the v1 values (V.RELATIONS_V1,
         V.OPTION_FEAT_DIM), so existing call sites and checkpoints are unaffected. The hierarchy-aware
         architecture passes `relation_names=V.RELATIONS_V2, option_feat_dim=V.OPTION_FEAT_DIM_V2`
-        explicitly; `ecgp.v21_config.V21_MODEL_CONFIG` is that configuration."""
+        explicitly; `policy.v21_config.V21_MODEL_CONFIG` is that configuration."""
         super().__init__()
         self.h = hidden
         self.relation_names = list(relation_names) if relation_names is not None else list(V.RELATIONS_V1)

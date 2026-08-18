@@ -392,7 +392,7 @@ def _group_mate_index(world):
     never inherits this attribute (clone() only copies the fields it explicitly lists), so a stale index
     can never leak across world instances. Matches EAgent.group_id equality DIRECTLY (not world.groups'
     EGroup.members list) because at least one real caller (ecgp/calibration/validate_tap.py) sets
-    agent.group_id on dsag agents AFTER dsag_bridge.build_scene_model() already froze scene.social_groups —
+    agent.group_id on dsag agents AFTER scene_bridge.build_scene_model() already froze scene.social_groups —
     live_bridge.build_world copies that later group_id onto EAgent, but never registers a matching EGroup
     for it, so relying on EGroup.members here would silently drop those group-mates."""
     idx = getattr(world, "_group_mate_idx_cache", None)

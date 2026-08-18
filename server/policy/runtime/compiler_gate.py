@@ -14,7 +14,7 @@ logs its verdict for the episode trace).
 import logging
 import os
 
-log = logging.getLogger("ecgp.compiler_gate")
+log = logging.getLogger("policy.compiler_gate")
 
 GATE_ENABLED = os.environ.get("ECGP_COMPILER_GATE", "1") != "0"
 _REJECT_STATUSES = ("UNSUPPORTED", "AMBIGUOUS", "INVALID_REFERENCE")

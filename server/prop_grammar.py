@@ -272,7 +272,7 @@ def build_objects(plan_zones: list[dict], env: set[str], objects: list[dict]) ->
 
     # PASS 5 (V2.1 section 4) — an explicit, AUTHORED cluster_id shared by a zone's surface + its bound
     # seats/consumables, plus a PROVIDES edge from any real provider in that zone to the cluster. This is
-    # the authoritative alternative to dsag_bridge.build_dining_clusters' runtime same-zone heuristic —
+    # the authoritative alternative to scene_bridge.build_dining_clusters' runtime same-zone heuristic —
     # cluster membership is decided HERE, at scene-generation time, using the grammar's own PASS 1-3
     # bindings, not re-inferred later from object_type keywords + zone proximity. Only a zone that actually
     # got a shared surface forms a cluster (a zone with no surface has nothing to cluster); a provider is

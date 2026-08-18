@@ -2,8 +2,8 @@
 world.py — the typed EFFECTIVE-STATE world the ECGP encoder / options / rollout-teacher operate on.
 
 Self-contained; reuses two shared pieces:
-  - `dsag.smart_object.SmartObject` for objects (carrying capacity/reservations, §9);
-  - `ecgp.social.Relationship` for the Lightweight Social Affinity edges (read-only here; ECGP's
+  - `scene.smart_object.SmartObject` for objects (carrying capacity/reservations, §9);
+  - `policy.social.Relationship` for the Lightweight Social Affinity edges (read-only here; ECGP's
     completion-gated updates live in ecgp/social.py).
 Holds an `OverlaySet` so every query the encoder makes is over effective (base ⊕ overlay) state.
 Navigation is a small zone-adjacency graph; `block_edge` overlays remove adjacencies at query time.
@@ -71,7 +71,7 @@ _ROLE_KEYWORDS_V2 = [
 def infer_object_role_v2(object_type: str) -> str:
     """Functional role (provider/consumable/seat/surface/fixture/workstation/sanitation) by object_type
     keyword. `cluster_root` is never inferred here -- it is a SYNTHESIZED role assigned only by
-    `dsag_bridge.build_dining_clusters` (no raw asset is intrinsically a cluster)."""
+    `scene_bridge.build_dining_clusters` (no raw asset is intrinsically a cluster)."""
     t = (object_type or "").lower()
     for role, keys in _ROLE_KEYWORDS_V2:
         if any(k in t for k in keys):
@@ -109,7 +109,7 @@ class EAgent:
     r_social: float = 0.0
     r_left_now: bool = False
     r_completed: bool = False
-    chain_state: object = None        # Gate 2: ChainState (ecgp.graph.chain_state) for an active macro-chain
+    chain_state: object = None        # Gate 2: ChainState (policy.graph.chain_state) for an active macro-chain
 
     def urgent_needs(self, k=2):
         from ..teacher.need_pressure import top_pressure_needs   # rank by PRESSURE, not raw value
@@ -187,7 +187,7 @@ class EcgpWorld:
         self.events: dict = {}
         self.operations: dict = {}
         self.overlays = OverlaySet()
-        self.relationships: dict = {}          # (a,b sorted) -> ecgp.social.Relationship
+        self.relationships: dict = {}          # (a,b sorted) -> policy.social.Relationship
         self.social_cooldowns: dict = {}       # (a,b sorted) -> last completed-interaction tick
         self.tick_no = 0
         self.scenario_id = "scene"

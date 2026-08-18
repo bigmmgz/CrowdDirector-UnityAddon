@@ -15,7 +15,7 @@ Statuses: EXECUTABLE / PARTIALLY_EXECUTABLE / UNSUPPORTED / AMBIGUOUS / INVALID_
 
 Grounding uses ONLY live scene capabilities: zones + functions, object roles/affordances, object
 state/capacity, reachability, exits, event anchors. No open-world operations, no named-event branches —
-the op vocabulary is exactly ecgp.vocab.EVENT_OP_KINDS_V1.
+the op vocabulary is exactly policy.vocab.EVENT_OP_KINDS_V1.
 
 `propose_ops_from_text` is a small DETERMINISTIC pattern layer used by unit tests and as a no-LLM
 fallback; the E1 compiler benchmark swaps in the LLM proposal while reusing every stage below it.

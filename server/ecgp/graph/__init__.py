@@ -1,1 +1,0 @@
-"""ecgp.graph subpackage."""

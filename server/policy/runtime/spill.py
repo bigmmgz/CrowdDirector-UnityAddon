@@ -12,7 +12,7 @@ attraction + disabled affordances) so the crowd avoids the area until it is remo
 import os
 import time
 
-from dsag.smart_object import SmartObject, Affordance
+from scene.smart_object import SmartObject, Affordance
 
 _CLEAN_TICKS = int(os.environ.get("ECGP_CLEAN_TICKS", "2"))     # dwell to finish cleaning after arrival
 _MIN_CLEAN_SEC = float(os.environ.get("ECGP_MIN_CLEAN_SEC", "10"))  # a spill stays at least this long (real seconds)
@@ -44,7 +44,7 @@ def _social_role(a):
 
 
 def _restriction_patch(sid, zone_id):
-    from dsag.patch import ScenePatch, PatchOp
+    from scene.patch import ScenePatch, PatchOp
     return ScenePatch(
         event_type="hazard", display_name=f"spill:{sid}", global_directive="avoid", ttl=10 ** 6,
         ops=[PatchOp(op="zone_attraction", zone=zone_id, delta=_SPILL_ATTRACT),
@@ -102,7 +102,7 @@ def _finish_spill(scene, sid):
     # Drop the spill's own restriction patch AND any OTHER closure on the same zone (e.g. the LLM's
     # 'toilet is dirty' hazard, which has its own ttl) — so cleaning FULLY reopens the zone at once and the
     # 'cleaned' message matches the closed sign disappearing (they were out of sync before).
-    from dsag.patch import zone_matches
+    from scene.patch import zone_matches
     z = scene.zones.get(st["zone"])
     patches = [p for p in getattr(scene, "active_patches", []) if p is not st["patch"]]
     if z is not None:

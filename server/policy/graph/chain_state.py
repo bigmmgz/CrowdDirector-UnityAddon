@@ -4,11 +4,11 @@ object reservations. A single shared vocabulary (`ChainStage`) and record (`Chai
 executor of a cluster-style macro-chain ("eat@dining_cluster_root": approach provider -> acquire ->
 approach seat -> seated -> consume -> complete) constructs and advances as it actually runs the chain:
 
-  - `ecgp.teacher.simulator` (the offline rollout stepper) sets/advances `agent.chain_state` as it
+  - `policy.teacher.simulator` (the offline rollout stepper) sets/advances `agent.chain_state` as it
     executes a fixed or rule-chosen cluster-root intent tick by tick.
-  - `ecgp.runtime.live_bridge` (the live per-tick server loop) does the same for the real running scene.
+  - `policy.runtime.live_bridge` (the live per-tick server loop) does the same for the real running scene.
 
-`ecgp.teacher.reward._chain_stage_and_distance` reads `agent.chain_state` as its PRIMARY signal (falling
+`policy.teacher.reward._chain_stage_and_distance` reads `agent.chain_state` as its PRIMARY signal (falling
 back to the older reservation-based inference only when no chain_state is present for this cluster — e.g.
 a hand-built unit-test world that never runs a real executor). Eval logs and the Unity wire protocol
 (`DirectorAction.stage`/`failure_reason` in SceneSpec.cs) both carry the same field names, so a single

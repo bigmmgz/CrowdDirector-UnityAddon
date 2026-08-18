@@ -42,7 +42,7 @@ PATCH_OP_KINDS = (
                            #   — "firefighters arrive", "a medic comes in", "more customers show up"
     "role_directive",      # send EVERY agent of a role to a    {role, zone|zone_function, action?}
                            #   zone (responders → the hazard), stronger than role_priority
-    # ── AMBIENT world ops (see ecgp.runtime.ambient) — these reach the policy through the graph only ──
+    # ── AMBIENT world ops (see policy.runtime.ambient) — these reach the policy through the graph only ──
     "object_attraction",   # point the crowd at ONE object:     {object, delta}
                            #   the free-sample tray, the busy counter — scoped tighter than a whole zone
     "zone_hazard",         # non-evacuation KEEPAWAY on zone(s): {zone|zone_function, delta, severity}
@@ -129,7 +129,7 @@ class ScenePatch:
     leavers_locked: bool = False
     resolved_leavers: list = field(default_factory=list)
     # WHO CREATED THIS PATCH. "" / "user" = a human director typed it; "ambient" = the world simulation
-    # (ecgp.runtime.ambient) produced it on a timer. The distinction is load-bearing, not cosmetic: the
+    # (policy.runtime.ambient) produced it on a timer. The distinction is load-bearing, not cosmetic: the
     # deterministic party/gather branch seizes every eligible agent for a patch's whole ttl, which is
     # correct for a typed command and wrong for background world texture. See live_bridge._attracted_zones.
     origin: str = ""
@@ -631,7 +631,7 @@ def _spawn_outside_point(scene, zid):
     bad coordinate surfaced as responders spawning in a wall and wandering off instead of attending the
     hazard. Fall back to the old guess only when no graph has been exported yet."""
     try:
-        from dsag_bridge import entry_point          # late import: dsag_bridge imports this module
+        from scene_bridge import entry_point          # late import: scene_bridge imports this module
         p = entry_point(scene, near_zone=zid)
         if p is not None:
             return (float(p[0]), float(p[1]))

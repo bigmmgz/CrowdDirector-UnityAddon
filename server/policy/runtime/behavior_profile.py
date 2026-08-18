@@ -11,7 +11,7 @@ product-of-experts (log-linear / energy) composition:
   * phi(o)    — an interpretable OPTION-feature vector, derived from the option itself (social / consume /
                 rest / work / explore / stay / group), NOT hardcoded per agent-type.
   * theta     — a continuous per-profile weight vector. Initialised from an OCEAN/role prior and then
-                CALIBRATED to behavioral signatures (ecgp.calibration.fit_profiles) — not authored by hand.
+                CALIBRATED to behavioral signatures (policy.calibration.fit_profiles) — not authored by hand.
   * beta      — global gain. beta == 0 recovers the frozen ECGP EXACTLY (clean ablation).
 
 No GNN retraining, no teacher/dataset/vocab change: this is pure inference-time composition.

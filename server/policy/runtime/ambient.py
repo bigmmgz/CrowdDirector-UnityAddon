@@ -9,7 +9,7 @@ world on its next tick. Nothing here writes to `_COMMIT`, picks a target, or ove
 "driven by v3" property is preserved exactly.
 
 Everything is built from mechanics that already existed and were only reachable via a typed EventPatch:
-  spill      -> ecgp.runtime.spill.spawn_spill  (staff clean it, the zone shows a 'closed' sign meanwhile)
+  spill      -> policy.runtime.spill.spawn_spill  (staff clean it, the zone shows a 'closed' sign meanwhile)
   delivery   -> refills a stocked food source early; Unity's bound portion props reappear
   arrival    -> queues a spawn_agent mutation, mirrored to Unity as new characters at the entrance
   departure  -> marks one non-staff agent as leaving; the existing egress path walks it out and despawns it
@@ -22,7 +22,7 @@ import logging
 import os
 import random
 
-log = logging.getLogger("ecgp.live")
+log = logging.getLogger("policy.live")
 
 ENABLED = os.environ.get("ECGP_AMBIENT", "1") == "1"
 
@@ -113,8 +113,8 @@ def _emit(scene, story, kind, key, event_type, ops, ttl, line):
     live_bridge._attracted_zones. Without it a positive zone_attraction here would seize every eligible
     agent for the patch's whole ttl and CrowdDirect v3 would stop deciding for the duration.
     """
-    from dsag.patch import ScenePatch
-    from ecgp.runtime.live_bridge import AMBIENT_PATCH_FLAG
+    from scene.patch import ScenePatch
+    from policy.runtime.live_bridge import AMBIENT_PATCH_FLAG
     patches = getattr(scene, "active_patches", None)
     if patches is None:
         patches = scene.active_patches = []
@@ -126,7 +126,7 @@ def _emit(scene, story, kind, key, event_type, ops, ttl, line):
 
 
 def _zname(scene, zid):
-    from ecgp.runtime.live_bridge import _zname as z
+    from policy.runtime.live_bridge import _zname as z
     return z(scene, zid)
 
 
@@ -195,9 +195,9 @@ def tick(scene, cadence, story):
         if zones and len(already) < 2:
             zid = zones[0]
             try:
-                from ecgp.runtime.spill import spawn_spill
+                from policy.runtime.spill import spawn_spill
                 spawn_spill(scene, zid)
-                from ecgp.runtime.live_bridge import _zname
+                from policy.runtime.live_bridge import _zname
                 story.append(f"someone spilled a drink in the {_zname(scene, zid)} — staff are on it")
                 log.info(f"[ambient] spill in {zid}")
                 return 1
@@ -237,7 +237,7 @@ def tick(scene, cadence, story):
 
     # ── someone finishes up and heads out ────────────────────────────────────────────────────────────
     if "departure" in cadence and _due("departure", t, *cadence["departure"]):
-        from ecgp.runtime import live_bridge as LB
+        from policy.runtime import live_bridge as LB
         leaving = set(getattr(LB, "_LEAVING", {}) or {})
         cands = [a for aid, a in scene.agents.items()
                  if aid not in leaving and (getattr(a, "role", "") or "").lower() not in _STAFF_ROLES]
@@ -257,7 +257,7 @@ def tick(scene, cadence, story):
 # ── Tier-A events ────────────────────────────────────────────────────────────────────────────────────
 
 def _tier_a(scene, cadence, story, t):
-    from dsag.patch import PatchOp
+    from scene.patch import PatchOp
 
     # 1) FREE SAMPLES — one object gets the crowd's attention. The narrowest possible event: a single
     #    object_attraction and nothing else, so it exercises the object channel in isolation.
@@ -381,9 +381,9 @@ def _spawn_visitor(scene, zid, i):
     ArgumentNullException the moment any neighbour keys a relationship dictionary on it. So: same id source
     (`_next_agent_id`) and same payload shape as the graph-edit `spawn_agent` op, no shortcuts.
     """
-    from dsag.patch import _next_agent_id
-    from dsag.world import AgentInstance
-    from dsag.needs import Needs
+    from scene.patch import _next_agent_id
+    from scene.world import AgentInstance
+    from scene.needs import Needs
 
     aid = _next_agent_id(scene)
     role = _visitor_role(scene)
@@ -397,7 +397,7 @@ def _spawn_visitor(scene, zid, i):
 
     # Spawn AT THE DOOR (Unity-exported egress gate), not at the zone centre — a visitor who appears
     # mid-room reads as teleporting in. The small x-jitter keeps a multi-arrival burst from stacking.
-    from dsag_bridge import entry_point
+    from scene_bridge import entry_point
     cx, cy = entry_point(scene, near_zone=zid)
     return {"id": aid, "name": name, "role": role, "agent_type": role, "zone_id": zid,
             "x": float(cx + (i - 0.5) * 0.6), "y": float(cy), "needs": needs.as_dict()}
@@ -414,8 +414,8 @@ def _visitor_role(scene):
 def _full_stock(o):
     """This source's OWN full level (set when the scene authored its stock), not the global default —
     otherwise a delivery hands a counter more portions than it has food props to show."""
-    import dsag_bridge
-    return int(getattr(o, "_full_stock", None) or dsag_bridge.FOOD_STOCK)
+    import scene_bridge
+    return int(getattr(o, "_full_stock", None) or scene_bridge.FOOD_STOCK)
 
 
 def _access_zone(scene):

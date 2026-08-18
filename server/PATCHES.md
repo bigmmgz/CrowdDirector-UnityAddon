@@ -16,7 +16,7 @@ upstream a diff rather than a merge.
 The original resolves to a sibling `CrowdSim/` Unity project. It now defaults to `server/EventLog` and
 honours `CROWDDIRECTOR_EVENTLOG`; point that at the old location to reproduce the original exactly.
 
-### `ecgp/runtime/live_bridge.py` — default checkpoint
+### `policy/runtime/live_bridge.py` — default checkpoint
 
 ```diff
 -                                                 "crowddirect_v3", "outputs", "cd_v3_seed0", "best.pt"))

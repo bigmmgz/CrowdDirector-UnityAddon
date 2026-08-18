@@ -10,10 +10,10 @@ director path is untouched.
 
 import os
 
-from dsag import SceneModel, ZoneInstance, AgentInstance, Needs
-from dsag.templates import build_objects
-from dsag.behavior import STAFF_ROLES
-from dsag.smart_object import SmartObject, Affordance, PolicyRule
+from scene import SceneModel, ZoneInstance, AgentInstance, Needs
+from scene.templates import build_objects
+from scene.behavior import STAFF_ROLES
+from scene.smart_object import SmartObject, Affordance, PolicyRule
 
 FOOD_STOCK = int(os.environ.get("ECGP_FOOD_STOCK", "4"))   # visible portions per eat-source
 
@@ -246,7 +246,7 @@ def _object_from_export(o: dict) -> SmartObject:
 def seed_objects_from_spec(scene: SceneModel, smart_objects: list) -> int:
     """Replace the scene's IDEALIZED template objects with the ones a PREBAKED scene authored itself.
 
-    build_scene_model() always calls dsag.templates.build_objects(zones), which invents one generic object
+    build_scene_model() always calls scene.templates.build_objects(zones), which invents one generic object
     per zone type at a made-up position (`z0_chair_1`, ...). For a generated scene that is the right seed —
     Unity later exports what it actually placed and ground_scene_in_graph() swaps them out.
 
@@ -474,7 +474,7 @@ def build_dining_clusters(scene: SceneModel) -> dict:
     present, it is used AUTHORITATIVELY (no same-zone guessing at all, including for a cross-zone provider —
     the exact case the old heuristic could never handle). The same-zone heuristic below remains a FALLBACK
     for scenes that never went through prop_grammar.py (e.g. dsag/templates.py's stage-1 path)."""
-    from ecgp.graph.world import infer_object_role_v2
+    from policy.graph.world import infer_object_role_v2
     authored: dict[str, dict] = {}
     for oid, o in scene.objects.items():
         cid = getattr(o, "cluster_id", None)

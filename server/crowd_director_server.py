@@ -20,11 +20,11 @@ import websockets
 import anthropic
 
 import sprite_gen
-import dsag_bridge
+import scene_bridge
 import event_intent   # canonical event-intent resolver (LLM intent + MiniLM semantic fallback)
 import grid_layout
 import scene_spec
-from dsag.patch import ScenePatch, PATCH_OP_KINDS, apply_structural_ops
+from scene.patch import ScenePatch, PATCH_OP_KINDS, apply_structural_ops
 
 # On-demand LPC character generation (pixel-art animated sheets). Guarded so the server still
 # runs if the assetgen package or the cloned LPC repo is missing.
@@ -58,24 +58,24 @@ _PRIORITY_BY_SOURCE = {"emergency": 4, "directive": 3, "event": 2, "interaction"
 # without this a stale in-flight command from the PREVIOUS scene could be misapplied to a same-numbered
 # agent in the new one.
 _SCENE_EPOCH = [0]
-_AMBIENT_CADENCE = [None]        # per-scene ambient event cadence (see ecgp.runtime.ambient.configure)
+_AMBIENT_CADENCE = [None]        # per-scene ambient event cadence (see policy.runtime.ambient.configure)
 
 
 def _reset_behavior_state():
     """Wipe the behaviour engines' per-agent bookkeeping on every new scene.
 
-    `ecgp.runtime.live_bridge` keeps commitments, chain state, leave counters and party slots in module-level
+    `policy.runtime.live_bridge` keeps commitments, chain state, leave counters and party slots in module-level
     dicts keyed by AGENT ID — and agent ids restart at `agent_0` in every scene. Without this a freshly loaded
     scene inherits the previous one's commitments, so an agent is sent to a smart object that belonged to the
     OLD venue and no longer exists. Also clears the meet bookkeeping held here."""
     try:
-        from ecgp.runtime import live_bridge as _lb
+        from policy.runtime import live_bridge as _lb
         _lb.reset_scene_state()
     except Exception as e:                       # never let a reset failure block a scene load
         log.warning(f"[scene] behaviour-state reset skipped: {e}")
     _MEET_MET.clear()
     try:
-        from ecgp.runtime import ambient as _amb
+        from policy.runtime import ambient as _amb
         _AMBIENT_CADENCE[0] = _amb.configure(getattr(sim, "_scene_cfg", None))
     except Exception as e:
         log.warning(f"[ambient] configure skipped: {e}")
@@ -405,7 +405,7 @@ def _match_zone_id(scene, zkey):
         return None
     if zkey in scene.zones:
         return zkey
-    from dsag.patch import PatchOp, zone_matches
+    from scene.patch import PatchOp, zone_matches
     op = PatchOp(op="_", zone=zkey)
     return next((z.id for z in scene.zones.values() if zone_matches(op, z)), None)
 
@@ -1056,7 +1056,7 @@ _LEAVE_PATS = [
 def _leave_fallback_ops(description: str) -> list:
     """Deterministic safety net: turn an obvious 'go home / leave' command into agent_leave op(s) when the LLM
     misclassifies it (the reported bug: 'morgan wants to go home' / 'friends leave' did nothing). The SUBJECT
-    is grounded downstream by dsag.patch.agents_leaving (name vs social group / type). Returns [] for a global
+    is grounded downstream by scene.patch.agents_leaving (name vs social group / type). Returns [] for a global
     'everyone leaves' (that stays end_of_day) or when no leave command is detected."""
     t = " " + (description or "").lower().strip().strip(".!") + " "
     who = None
@@ -1184,7 +1184,7 @@ async def process_inbox_dsag(scene):
                     if mut["removed_objects"] or mut["spawned_agents"]:
                         log.info(f"[inbox]    graph-edit: unavailable {mut['removed_objects']} "
                                  f"spawned {[a['id']+':'+a['role'] for a in mut['spawned_agents']]}")
-                    from ecgp.runtime.live_bridge import _olog, _oname
+                    from policy.runtime.live_bridge import _olog, _oname
                     for oid in mut["removed_objects"]:                 # broken/dropped -> amber object log
                         ob = scene.objects.get(oid)
                         _olog(scene, f"the {_oname(ob, oid)} was broken — out of service")
@@ -1208,7 +1208,7 @@ async def process_inbox_dsag(scene):
                                     ("zone_attraction", "disable_affordance")), None)
                         zid = _match_zone_id(scene, zid) or (next(iter(scene.zones)) if scene.zones else None)
                         if zid:
-                            from ecgp.runtime.spill import spawn_spill
+                            from policy.runtime.spill import spawn_spill
                             sid = spawn_spill(scene, zid)
                             log.info(f"[inbox]    SPILL spawned {sid} in zone {zid} -> staff will clean it")
                     # PARTY / CELEBRATION -> hang balloons over the zone until the patch's ttl runs out (or an
@@ -1236,8 +1236,8 @@ async def process_inbox_dsag(scene):
                                          and any(getattr(a, "action", None) == "talk"
                                                  for a in getattr(o, "affordances", []))), None)
                             if _mic is not None:
-                                from ecgp.runtime.spill import _queue as _mutq
-                                from dsag.patch import PatchOp as _POp
+                                from policy.runtime.spill import _queue as _mutq
+                                from scene.patch import PatchOp as _POp
                                 patch.ops.append(_POp(op="object_attraction", object=_mic.id, delta=70.0))
                                 _dec = getattr(scene, "_decor_props", None)
                                 if _dec is None:
@@ -1278,7 +1278,7 @@ async def process_inbox_dsag(scene):
                                         if z.lower() in low or z.replace("_", " ").lower() in low), None)
                         zid = zid or (next(iter(scene.zones)) if scene.zones else None)
                         if zid:
-                            from ecgp.runtime.spill import _queue as _mutq
+                            from policy.runtime.spill import _queue as _mutq
                             fires = getattr(scene, "_fire_props", None)
                             if fires is None:
                                 fires = scene._fire_props = {}
@@ -1288,7 +1288,7 @@ async def process_inbox_dsag(scene):
                                                              "zone_id": zid, "x": float(fcx), "y": float(fcy)})
                             fires[fid] = {"zone": zid, "until": time.monotonic() + 12.0}
                             # keep the staff on station while the visitors evacuate
-                            from dsag.patch import PatchOp as _POp
+                            from scene.patch import PatchOp as _POp
                             recep = next((z for z in scene.zones if "recep" in z.lower()), None)
                             if recep:
                                 staff_roles = sorted({(getattr(a, "role", "") or "").lower()
@@ -1314,9 +1314,9 @@ async def process_inbox_dsag(scene):
                                         if any(getattr(a, "action", None) == "eat"
                                                for a in getattr(o, "affordances", []))), None)
                         if zid and zid in scene.zones:
-                            from ecgp.runtime.spill import _queue as _mutq
-                            from dsag.smart_object import SmartObject, Affordance
-                            from dsag.patch import PatchOp as _POp
+                            from policy.runtime.spill import _queue as _mutq
+                            from scene.smart_object import SmartObject, Affordance
+                            from scene.patch import PatchOp as _POp
                             pops = getattr(scene, "_popups", None)
                             if pops is None:
                                 pops = scene._popups = {}
@@ -1346,17 +1346,17 @@ async def process_inbox_dsag(scene):
                     # real AgentInstance AND queue a COMPLETE spawn record (a record without an id crashes
                     # Unity's relationship dicts; an instance without a record is an undriven body).
                     def _spawn_event_agent(role, name, zid_home):
-                        from dsag.patch import _next_agent_id
-                        from dsag.world import AgentInstance
-                        from dsag.needs import Needs
-                        from ecgp.runtime.spill import _queue as _mq
+                        from scene.patch import _next_agent_id
+                        from scene.world import AgentInstance
+                        from scene.needs import Needs
+                        from policy.runtime.spill import _queue as _mq
                         said = _next_agent_id(scene)
                         scene.agents[said] = AgentInstance(id=said, name=name, role=role,
                                                            needs=Needs(), current_zone=zid_home)
                         # ALWAYS spawn at the DOOR (Unity-exported egress gate) and let the role's
                         # directive walk them to zid_home — a VIP or musician materialising mid-room
                         # was the visible bug; the walk in through reception IS the entrance moment.
-                        zc = dsag_bridge.entry_point(scene, near_zone=zid_home)
+                        zc = scene_bridge.entry_point(scene, near_zone=zid_home)
                         _mq(scene, "spawned_agents", {"id": said, "name": name, "role": role,
                                                       "agent_type": role, "zone_id": zid_home,
                                                       "x": float(zc[0]), "y": float(zc[1]),
@@ -1377,7 +1377,7 @@ async def process_inbox_dsag(scene):
                         zid = zid or next((z for z in scene.zones if "music" in z.lower()
                                            or "event" in z.lower() or "stage" in z.lower()), None)
                         if zid and zid in scene.zones:
-                            from dsag.patch import PatchOp as _POp
+                            from scene.patch import PatchOp as _POp
                             gigs = getattr(scene, "_gigs", None)
                             if gigs is None:
                                 gigs = scene._gigs = {}
@@ -1406,7 +1406,7 @@ async def process_inbox_dsag(scene):
                                             or "lounge" in z.lower()), None)
                                    or (next(iter(scene.zones)) if scene.zones else None))
                         if zid and zid in scene.zones:
-                            from dsag.patch import PatchOp as _POp
+                            from scene.patch import PatchOp as _POp
                             vips = getattr(scene, "_vips", None)
                             if vips is None:
                                 vips = scene._vips = {}
@@ -1431,8 +1431,8 @@ async def process_inbox_dsag(scene):
                                          if any(getattr(a, "action", None) == "drink"
                                                 for a in getattr(o, "affordances", []))), None))
                         if mach is not None:
-                            from ecgp.runtime.spill import _queue as _mutq
-                            from dsag.patch import PatchOp as _POp
+                            from policy.runtime.spill import _queue as _mutq
+                            from scene.patch import PatchOp as _POp
                             outs = getattr(scene, "_outages", None)
                             if outs is None:
                                 outs = scene._outages = {}
@@ -1442,12 +1442,12 @@ async def process_inbox_dsag(scene):
                                                              "zone_id": mach.zone_id,
                                                              "x": float(mpx), "y": float(mpy)})
                             # OUT OF SERVICE for real. An object-scoped `disable_affordance` op does
-                            # NOT work — dsag.patch.action_disabled matches on action+zone and never
+                            # NOT work — scene.patch.action_disabled matches on action+zone and never
                             # reads op.object, so agents kept using the "broken" machine and only the
                             # spark appeared. break_object() marks it removed (every option loop skips
                             # a removed object, and Unity hides it), dispatches a staff member, and
                             # restores it ~8s later, taking the spark down with it.
-                            from ecgp.runtime.live_bridge import break_object as _break
+                            from policy.runtime.live_bridge import break_object as _break
                             _break(scene, mach, props=[spid])
                             outs.pop(spid, None)          # the repair owns this prop's lifetime now
                             log.info(f"[inbox]    OUTAGE -> {mach.id} OUT OF SERVICE, spark {spid}, "
@@ -1462,9 +1462,9 @@ async def process_inbox_dsag(scene):
                                             or "event" in z.lower()), None)
                                    or (next(iter(scene.zones)) if scene.zones else None))
                         if zid and zid in scene.zones:
-                            from ecgp.runtime.spill import _queue as _mutq
-                            from dsag.smart_object import SmartObject, Affordance
-                            from dsag.patch import PatchOp as _POp
+                            from policy.runtime.spill import _queue as _mutq
+                            from scene.smart_object import SmartObject, Affordance
+                            from scene.patch import PatchOp as _POp
                             pops = getattr(scene, "_popups", None)
                             if pops is None:
                                 pops = scene._popups = {}
@@ -1844,7 +1844,7 @@ async def handle_client(ws):
                     # smart-object states to Unity. The existing LLM director is bypassed for
                     # this session (see request_tick); nothing on the "llm" path changes.
                     if director_mode == "dsag":
-                        sim.dsag_scene = dsag_bridge.build_scene_model(sim.zones, agent_list)
+                        sim.dsag_scene = scene_bridge.build_scene_model(sim.zones, agent_list)
                         objs = [o.render_state() for o in sim.dsag_scene.objects.values()]
                         await send(json.dumps({"type": "object_states", "objects": objs}))
                         log.info(f"[ecgp] scene built: {len(sim.dsag_scene.agents)} agents, "
@@ -1957,13 +1957,13 @@ async def handle_client(ws):
                         "agent_types": config.get("agent_types", []), "agents": agent_list})
 
                     if director_mode == "dsag":
-                        sim.dsag_scene = dsag_bridge.build_scene_model(sim.zones, agent_list)
+                        sim.dsag_scene = scene_bridge.build_scene_model(sim.zones, agent_list)
                         # A PREBAKED level authors its own smart objects at fixed positions. Replace the
                         # idealized per-zone template objects build_scene_model() seeds, or their made-up ids
                         # go out in this first object_states and Unity scatters a placeholder sprite for each
                         # across the zone — the stray smart-object dots on empty floor.
                         spec_objs = (sim.scene_spec or {}).get("smart_objects") or []
-                        n_seed = dsag_bridge.seed_objects_from_spec(sim.dsag_scene, spec_objs)
+                        n_seed = scene_bridge.seed_objects_from_spec(sim.dsag_scene, spec_objs)
                         if n_seed:
                             log.info(f"[ecgp] seeded {n_seed} authored smart objects (templates discarded)")
                         objs = [o.render_state() for o in sim.dsag_scene.objects.values()]
@@ -1988,7 +1988,7 @@ async def handle_client(ws):
                     # target concrete, nav-reachable, placed smart objects (prop:<id>) instead of the
                     # idealized template objects, and actions carry each object's real interaction point.
                     if sim.dsag_scene is not None:
-                        n = dsag_bridge.ground_scene_in_graph(sim.dsag_scene, sim.scene_graph)
+                        n = scene_bridge.ground_scene_in_graph(sim.dsag_scene, sim.scene_graph)
                         if n:
                             objs = [o.render_state() for o in sim.dsag_scene.objects.values()]
                             await send(json.dumps({"type": "object_states", "objects": objs}))
@@ -2018,12 +2018,12 @@ async def handle_client(ws):
             elif mtype == "agent_despawned":
                 # Unity CONFIRMS this agent actually crossed the exit portal (CrowdDirector.SendAgentDespawned).
                 # Retires it from the server's bookkeeping on FACT, not a blind tick timer (see
-                # ecgp.runtime.live_bridge._maybe_retire) — the fix for a jammed-door "ghost" agent that the
+                # policy.runtime.live_bridge._maybe_retire) — the fix for a jammed-door "ghost" agent that the
                 # server used to forget about while Unity still showed it stuck and undriven. Imported directly
                 # here (not the `request_tick`-local `ecgp_live`, which may not exist yet on first connect).
                 aid = msg.get("agent_id")
                 if aid:
-                    from ecgp.runtime import live_bridge as _confirm_mod
+                    from policy.runtime import live_bridge as _confirm_mod
                     _confirm_mod.confirm_despawned(aid)
                     log.info(f"[ecgp] confirmed despawn: {aid} (crossed exit portal)")
 
@@ -2045,7 +2045,7 @@ async def handle_client(ws):
                     ecgp_live = None
                     if sim.behavior_engine == "ecgp":
                         try:
-                            from ecgp.runtime import live_bridge as ecgp_live
+                            from policy.runtime import live_bridge as ecgp_live
                             ecgp_live.get_policy()                 # load the 64x3 checkpoint once (fail fast)
                             engine = "ecgp"
                         except Exception as e:
@@ -2056,7 +2056,7 @@ async def handle_client(ws):
                     # scene has life of its own between director commands. Runs BEFORE the tick so the
                     # policy sees the changed world immediately.
                     try:
-                        from ecgp.runtime import ambient as _amb
+                        from policy.runtime import ambient as _amb
                         _story = []
                         if _amb.tick(sim.dsag_scene, _AMBIENT_CADENCE[0], _story) and _story:
                             await send(json.dumps({"type": "director_log", "lines": _story}))
@@ -2068,11 +2068,11 @@ async def handle_client(ws):
                                 ecgp_live.ecgp_tick, sim.dsag_scene, sim.zones)
                         except Exception as e:                     # never break the loop on a model error
                             log.warning(f"[ecgp] ecgp tick failed ({e}); falling back to rule engine")
-                            actions, object_states, dsag_events = dsag_bridge.tick_to_unity(sim.dsag_scene)
+                            actions, object_states, dsag_events = scene_bridge.tick_to_unity(sim.dsag_scene)
                     else:
-                        actions, object_states, dsag_events = dsag_bridge.tick_to_unity(sim.dsag_scene)
+                        actions, object_states, dsag_events = scene_bridge.tick_to_unity(sim.dsag_scene)
                     # Per-agent directive overlays on top of the tick's actions:
-                    from dsag import patch as dsag_patch
+                    from scene import patch as dsag_patch
                     by_id = {a["agent_id"]: a for a in actions}
                     # (1) "X talk to Y": turn the subject's action into a `meet` so Unity walks X to Y's live
                     #     position and they stop + face + converse (a plain zone move only shares a zone).
@@ -2126,12 +2126,12 @@ async def handle_client(ws):
                                     f"{[getattr(a,'name','?') for a in sim.dsag_scene.agents.values()][:12]}")
                     if leavers:
                         # SAFETY LAYER (item 4): the ECGP precedence (step 0.0) should already have emitted the
-                        # leave action via dsag_bridge.build_leave_action. Here we only VERIFY that, and reapply the
+                        # leave action via scene_bridge.build_leave_action. Here we only VERIFY that, and reapply the
                         # SAME shared builder if the engine (e.g. the rule fallback) didn't — logging any mismatch,
                         # rather than constructing a second, potentially-divergent leave action.
                         added, fixed = [], []
                         for aid in leavers:
-                            want = dsag_bridge.build_leave_action(sim.dsag_scene, aid)
+                            want = scene_bridge.build_leave_action(sim.dsag_scene, aid)
                             a = by_id.get(aid)
                             if a is None:                                    # engine emitted nothing for this agent
                                 actions.append(want); by_id[aid] = want; added.append(aid)
@@ -2291,7 +2291,7 @@ async def handle_client(ws):
                             # ops from the live scene; UNSUPPORTED/AMBIGUOUS/INVALID_REFERENCE are
                             # rejected with the reason instead of guessing a patch. ECGP_COMPILER_GATE=0
                             # disables rejection (verdict still logged for the episode trace).
-                            from ecgp.runtime import compiler_gate
+                            from policy.runtime import compiler_gate
                             verdict = compiler_gate.precheck(description, sim.dsag_scene, sim.zones)
                             try:
                                 from evaluation.unity_harness import episode_logger

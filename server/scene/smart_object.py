@@ -127,7 +127,7 @@ class SmartObject:
     # ── reversible removed/unavailable lifecycle (graph-EDIT remove_object) ───
     # A broken glass / cordoned exhibit is taken OUT of service, NOT deleted: the node keeps its stable id
     # and provenance, all affordances go dark, reservations/occupancy are released, and it is excluded from
-    # candidate options — then restore() puts it back when the owning patch clears. See dsag.patch.
+    # candidate options — then restore() puts it back when the owning patch clears. See scene.patch.
     removed: bool = False
     removed_by: Optional[str] = None                   # provenance: display_name of the patch that removed it
     _state_before_removal: Optional[str] = None

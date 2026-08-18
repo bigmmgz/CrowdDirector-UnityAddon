@@ -246,8 +246,9 @@ The server reads its settings from the environment:
 
 ```
 server/          director server and the trained policy
-  ecgp/            graph policy, runtime and instruction compiler
-  dsag/            smart objects, affordances, needs
+  policy/          the graph policy, its runtime and the instruction compiler
+  scene/           smart objects, affordances, needs
+  assets/          smart-object catalog
   model/           the released checkpoint
 unity/           Unity client package (UPM)
   Runtime/         ICrowdAgent, CrowdNeeds, CrowdDirectorClient

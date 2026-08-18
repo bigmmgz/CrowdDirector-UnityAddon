@@ -26,9 +26,9 @@ from .inference import ECGPPolicy
 from . import behavior_profile as BP
 from . import spill as _spill
 
-import dsag_bridge  # for _outside_point (evacuation off-map target)
+import scene_bridge  # for _outside_point (evacuation off-map target)
 
-log = logging.getLogger("ecgp.live")
+log = logging.getLogger("policy.live")
 _TRACE = bool(os.environ.get("ECGP_TRACE"))          # set ECGP_TRACE=1 to log per-tick decision diagnostics
 _TRACE_PATH = os.environ.get("ECGP_TRACE_PATH", "outputs/ecgp_trace.jsonl")
 _LAST_TARGET = {}                                    # agent_id -> (target_type, target_id) for switch detection
@@ -49,7 +49,7 @@ _QUEUE_LOCK = {}                                     # agent_id -> {oid, pt, act
 # The two modes must never silently share results in a report — always state ECGP_MODE alongside a trace.
 _MODE = os.environ.get("ECGP_MODE", "research_learned")
 if _MODE not in ("research_learned", "safe_demo_hybrid"):
-    logging.getLogger("ecgp.live").warning(f"[ecgp] unknown ECGP_MODE={_MODE!r} — using research_learned")
+    logging.getLogger("policy.live").warning(f"[ecgp] unknown ECGP_MODE={_MODE!r} — using research_learned")
     _MODE = "research_learned"
 _RESEARCH_MODE = _MODE == "research_learned"
 
@@ -94,7 +94,7 @@ _LAST_TALK = {}                                                   # agent_id -> 
 
 def _load_calibrated_theta():
     """Calibrated per-PROFILE theta table {profile_name: {feature: w}} from ECGP_PRIOR_THETA (a fit produced
-    by ecgp.calibration.fit_profiles). Absent -> {} -> the untuned OCEAN/role init is used instead. This is
+    by policy.calibration.fit_profiles). Absent -> {} -> the untuned OCEAN/role init is used instead. This is
     the ONLY difference between condition (2) OCEAN-init and (3) calibrated at runtime."""
     path = os.environ.get("ECGP_PRIOR_THETA")
     if not path or not os.path.exists(path):
@@ -616,7 +616,7 @@ def build_world(scene, zone_dicts):
             continue                                     # removed/unavailable → excluded from candidate options
         w.add_object(o)
     if _CLUSTER_MASK_V2:                                 # V2.1 dining-cluster macro-option (graph-side only)
-        for cid, cluster in dsag_bridge.build_dining_clusters(scene).items():
+        for cid, cluster in scene_bridge.build_dining_clusters(scene).items():
             w.add_object(cluster)
     # SOCIAL UNITS (item 6): authored groups + pairwise relationships, so co-grouped agents surface
     # talk/help + group-target options in the ECGP option builder (O2), enabling family cohesion.
@@ -654,7 +654,7 @@ def _apply_directives(w, scene):
          `overlays.directive(agent.id)`) could never fire live. Deploying v3 without this is cosmetic: the
          one thing v3 adds over v2 would be dormant.
       2. Worse and independent of v3: a plain {agent, zone} directive was dropped ENTIRELY in ECGP mode.
-         `dsag.patch.agent_directive_target` — the resolver for it — is only ever called by the symbolic
+         `scene.patch.agent_directive_target` — the resolver for it — is only ever called by the symbolic
          rule engine (dsag/scene.py -> dsag/behavior.py). live_bridge resolves agents_leaving,
          personal_action_directives and role_directive_targets deterministically, but never a plain
          zone directive, so the single most common director command did nothing at all here.
@@ -674,7 +674,7 @@ def _apply_directives(w, scene):
     patches = getattr(scene, "active_patches", []) or []
     if not patches:
         return 0
-    from dsag import patch as dp
+    from scene import patch as dp
     roles = dp.role_directive_targets(patches, scene)            # {role: zone_id}
     directed = {}
     for aid, agent in scene.agents.items():
@@ -715,7 +715,7 @@ def _apply_events(w, scene):
         if ops:
             w.add_event(EEvent(id="live_fire", is_evacuation=True, ttl=30, severity=0.9), ops)
         return
-    from dsag import patch as dp
+    from scene import patch as dp
     ops = []
     haz_ops = []
     for p in patches:
@@ -850,7 +850,7 @@ def _find_relief_object(scene, action, near_zone=None):
     return best[1] if best else None
 
 
-# A patch carrying this flag came from the AMBIENT world simulation (ecgp.runtime.ambient), not from a human
+# A patch carrying this flag came from the AMBIENT world simulation (policy.runtime.ambient), not from a human
 # director. See _attracted_zones for why the distinction has to exist.
 AMBIENT_PATCH_FLAG = "ambient"
 
@@ -862,7 +862,7 @@ def is_ambient_patch(p) -> bool:
 def _attracted_zones(scene):
     """Zones a positive zone_attraction patch points at (a USER 'gather here' / 'party here' directive).
     Empty when no attraction is active. Routes every op.zone reference through the single resolver
-    (dsag.patch.resolve_zone_reference, via zone_matches(..., all_zones=...)) so a party aimed at ONE zone
+    (scene.patch.resolve_zone_reference, via zone_matches(..., all_zones=...)) so a party aimed at ONE zone
     never also pulls in a DIFFERENT zone that merely shares a zone_type or keyword — without the shared
     resolver, a party aimed at 'lounge' also matches 'window_seats' when that zone's TYPE is 'lounge'.
 
@@ -873,7 +873,7 @@ def _attracted_zones(scene):
     to weigh against needs. Without this filter every ambient attraction event would bypass CrowdDirect v3
     for its entire duration — the crowd would look scripted and the model would stop deciding.
     """
-    from dsag import patch as _dp
+    from scene import patch as _dp
     patches = [p for p in (getattr(scene, "active_patches", []) or []) if not is_ambient_patch(p)]
     all_zones = list(scene.zones.values())
     return [z for z in all_zones if _dp.zone_attraction(patches, z, all_zones) > 0]
@@ -1036,7 +1036,7 @@ def _unmet_need_count(agent):
 
 
 def _is_party_zone(scene, zone):
-    from dsag import patch as _dp
+    from scene import patch as _dp
     all_zones = list(scene.zones.values())
     return "dance" in _dp.zone_enabled_actions(getattr(scene, "active_patches", []) or [], zone, all_zones)
 
@@ -1093,7 +1093,7 @@ def _zone_slots(rect):
 def _role_targets(scene):
     """{role: zone_id} from active role_directive ops — every agent of that role is routed there (spawned
     firefighters/medics → the hazard zone), overriding even a global evacuation for those responders."""
-    from dsag import patch as _dp
+    from scene import patch as _dp
     return _dp.role_directive_targets(getattr(scene, "active_patches", []) or [], scene)
 
 
@@ -1197,7 +1197,7 @@ def _start_restock(scene, obj):
     """Close the zone for restocking: a restriction patch (no eat/drink, repelled) tagged restock:<zone> —
     Unity shows the 'be back soon' sign there — plus a wall-clock timer for the staff restock."""
     import time as _t
-    from dsag.patch import ScenePatch, PatchOp
+    from scene.patch import ScenePatch, PatchOp
     zid = obj.zone_id
     rs = getattr(scene, "_restocks", None)
     if rs is None:
@@ -1225,7 +1225,7 @@ def tick_repairs(scene):
     locked to the job for that tick and the model cannot redirect them.
 
     The object is taken out of service with `mark_removed()`, not with a `disable_affordance` op: that op
-    is matched by action+zone (`dsag.patch.action_disabled` never reads `op.object`), so an object-scoped
+    is matched by action+zone (`scene.patch.action_disabled` never reads `op.object`), so an object-scoped
     disable either did nothing or would have shut down every drink source in the room. `mark_removed` is
     the reversible mechanism the option builder already honours in every candidate loop, and Unity hides
     it via object_states.available=false and shows it again on restore."""
@@ -1296,7 +1296,7 @@ def _check_restocks(scene):
             if o.zone_id == zid and getattr(o, "stock", None) is not None:
                 # back to THIS source's own full level, not the global default — an authored counter's
                 # stock matches the number of food props bound to it as visible portions.
-                o.stock = int(getattr(o, "_full_stock", None) or dsag_bridge.FOOD_STOCK)
+                o.stock = int(getattr(o, "_full_stock", None) or scene_bridge.FOOD_STOCK)
                 o.state = o.states[0] if getattr(o, "states", None) else "default"
                 o.state_ticks = 0
         _olog(scene, "staff restocked the food — open again")
@@ -1311,7 +1311,7 @@ def _start_cleanup(scene, zid, reason=""):
     — a disable_affordance so the server reports it in closed_zones and Unity hangs the 'closed' sign — plus a
     ~10s wall-clock timer for the staff to finish, after which the zone reopens. Mirrors _start_restock."""
     import time as _t
-    from dsag.patch import ScenePatch, PatchOp
+    from scene.patch import ScenePatch, PatchOp
     if not zid or zid not in getattr(scene, "zones", {}):
         return
     cs = getattr(scene, "_cleanups", None)
@@ -1359,7 +1359,7 @@ def _check_event_props(scene):
             scene.active_patches = [p for p in getattr(scene, "active_patches", [])
                                     if not getattr(p, "is_emergency", False)]
             roles = {(getattr(a, "role", "") or "").lower() for a in scene.agents.values()}
-            from dsag.patch import ScenePatch, PatchOp
+            from scene.patch import ScenePatch, PatchOp
             leave_ops = [PatchOp(op="agent_leave", role=r)
                          for r in ("firefighter", "medic", "police") if r in roles]
             if leave_ops:
@@ -1436,7 +1436,7 @@ def _check_event_props(scene):
             gigs.pop(gid, None)
             for pid in st.get("props", []):
                 _spill._queue(scene, "removed_objects", pid)
-            from dsag.patch import ScenePatch, PatchOp
+            from scene.patch import ScenePatch, PatchOp
             scene.active_patches.append(ScenePatch(event_type="group_directive",
                                                    display_name="gig over", ttl=25,
                                                    ops=[PatchOp(op="agent_leave", role="musician")]))
@@ -1447,7 +1447,7 @@ def _check_event_props(scene):
             if now < st["until"]:
                 continue
             vips.pop(vid, None)
-            from dsag.patch import ScenePatch, PatchOp
+            from scene.patch import ScenePatch, PatchOp
             scene.active_patches.append(ScenePatch(event_type="group_directive",
                                                    display_name="vip departs", ttl=25,
                                                    ops=[PatchOp(op="agent_leave", role="vip")]))
@@ -1638,7 +1638,7 @@ def _option_to_action(w, scene, agent_id, chosen):
                 msg["exec_action"] = variant
             return msg
     if act == "leave":
-        ox, oy = dsag_bridge._outside_point(scene, tid)
+        ox, oy = scene_bridge._outside_point(scene, tid)
         return {"agent_id": agent_id, "action": "move_to_zone", "zone_id": tid,
                 "target_x": ox, "target_y": oy, "evacuate": True, "reason": reason}
     if tt == "agent":
@@ -1754,7 +1754,7 @@ def _log_chain_stage(aid, semantic_goal, semantic_target, semantic_origin, chain
                      chain_state=None):
     """Section 1's required per-stage log line — every chain stage prints its full provenance record so a
     trace can distinguish 'ECGP chose the goal once' from 'the executor chose this stage's sub-target'.
-    When a `chain_state` (ecgp.graph.chain_state.ChainState) is available, its named stage and
+    When a `chain_state` (policy.graph.chain_state.ChainState) is available, its named stage and
     failure_reason are logged alongside the integer chain_stage (a step index), so a trace shows the real
     stage name such as CONSUMING rather than an opaque 0/1."""
     extra = ""
@@ -1840,7 +1840,7 @@ def ecgp_tick(scene, zone_dicts):
     scene.active_patches = [p for p in getattr(scene, "active_patches", []) if p.ttl > 0]
     # a removed object whose owning patch just expired comes BACK into service (reversible remove_object)
     try:
-        from dsag import patch as _dp
+        from scene import patch as _dp
         restored = _dp.restore_expired_removals(scene)
         if restored:
             log.info(f"[ecgp/lifecycle] restored {restored} (owning patch cleared) -> available again")
@@ -1866,7 +1866,7 @@ def ecgp_tick(scene, zone_dicts):
     if global_leave:                                     # evacuation (emergency) OR end_of_day (calm)
         emergency = getattr(scene, "is_emergency", lambda: False)()
         exit_id = scene.exit_zone_id()
-        ox, oy = dsag_bridge._outside_point(scene, exit_id)
+        ox, oy = scene_bridge._outside_point(scene, exit_id)
         reason = "ecgp:evacuate" if emergency else "ecgp:end_of_day"
         gl_source = "emergency" if emergency else "directive"
         gl_priority = 4 if emergency else 3
@@ -1954,7 +1954,7 @@ def ecgp_tick(scene, zone_dicts):
     # DIRECTED LEAVE (user "X goes home" / "the family leaves"): resolved ONCE up front so it participates in the
     # decision PRECEDENCE below (top priority, step 0.0) rather than as a post-hoc patch — an agent_leave then
     # beats every normal ECGP choice before anything is serialised.
-    from dsag import patch as _dp_leave
+    from scene import patch as _dp_leave
     directed_leavers = set(_dp_leave.agents_leaving(getattr(scene, "active_patches", []) or [], scene))
     if directed_leavers:
         log.info(f"[ecgp] directed leave (override): {sorted(directed_leavers)}")
@@ -1979,7 +1979,7 @@ def ecgp_tick(scene, zone_dicts):
         if agent is not None and aid in directed_leavers:
             _drop_commit(scene, aid)
             _LEAVING[aid] = _LEAVING.get(aid, 0) + 1
-            act = dsag_bridge.build_leave_action(scene, aid, "ecgp:leave_home")   # shared builder (item 4)
+            act = scene_bridge.build_leave_action(scene, aid, "ecgp:leave_home")   # shared builder (item 4)
             act["source"] = "directive"; act["priority"] = 3; act["semantic_origin"] = "explicit_directive"
             actions.append(act)
             agent.current_zone = act["zone_id"]
@@ -2021,7 +2021,7 @@ def ecgp_tick(scene, zone_dicts):
         #      orphaning a visible, un-driven "ghost" in Unity). The timer is now only a generous safety net.
         if aid in _LEAVING:
             _LEAVING[aid] += 1
-            act = dsag_bridge.build_leave_action(scene, aid, "ecgp:gave_up")      # shared builder (item 4)
+            act = scene_bridge.build_leave_action(scene, aid, "ecgp:gave_up")      # shared builder (item 4)
             act["source"] = "directive"; act["priority"] = 3; act["semantic_origin"] = "explicit_directive"
             actions.append(act)
             if agent is not None:
@@ -2036,7 +2036,7 @@ def ecgp_tick(scene, zone_dicts):
             _FRUSTRATION.pop(aid, None); _drop_commit(scene, aid)
             _LEAVING[aid] = 0
             _olog(scene, f"{getattr(agent, 'name', aid)} got fed up waiting and went home")
-            act = dsag_bridge.build_leave_action(scene, aid, "ecgp:gave_up")      # shared builder (item 4)
+            act = scene_bridge.build_leave_action(scene, aid, "ecgp:gave_up")      # shared builder (item 4)
             # NOT an explicit user directive (nobody told this agent to leave) and NOT a learned choice
             # either — a deterministic queue-starvation safety valve. Labelled hybrid_fallback for honesty;
             # this is the one judgment call in the taxonomy that doesn't map cleanly onto the 5 categories
@@ -2463,7 +2463,7 @@ def ecgp_tick(scene, zone_dicts):
                 chosen = dict(chosen); chosen["action"] = "observe"
         # V2.1 CLUSTER CHAIN (section 5/6) — "eat@dining_cluster_root" is the model's SEMANTIC pick (one
         # macro-option, not three independent guesses at table+chair+counter); execution expands it using the
-        # cluster's OWN authoritative membership (dsag_bridge.build_dining_clusters), not a zone-function
+        # cluster's OWN authoritative membership (scene_bridge.build_dining_clusters), not a zone-function
         # heuristic: acquire at the cluster's linked provider -> reserve one of ITS bound chairs -> consume
         # there. A cluster with no currently-free bound chair falls through to normal behaviour (infeasible
         # this tick, not a crash) rather than ever inventing an unbound seat.
