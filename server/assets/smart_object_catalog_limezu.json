@@ -1,0 +1,1686 @@
+{
+  "source": "LimeZu Modern Interiors/Exteriors/Office (48x48)",
+  "count": 45,
+  "dropped": [],
+  "overridden": [
+    "cafe/drink",
+    "living_room/couch",
+    "living_room/tv",
+    "living_room/bookshelf",
+    "bathroom/shower",
+    "bathroom/bath",
+    "office/coffee_machine",
+    "shop/checkout_counter",
+    "shop/drink"
+  ],
+  "objects": [
+    {
+      "prop_id": "cafe__coffee_machine",
+      "sprite_path": "Kitchen_Singles_48x48_193.png",
+      "theme": "cafe",
+      "zone_type": "service",
+      "prop_class": "food_drink",
+      "affordances": [
+        "drink"
+      ],
+      "need_effects": {
+        "thirst": -55
+      },
+      "capacity": 2,
+      "interaction_duration": 4,
+      "availability_default": "available",
+      "event_relevance": [
+        "party",
+        "closing"
+      ],
+      "placement_rules": {
+        "zone_function": "service",
+        "query": "coffee_machine"
+      },
+      "note": "sprite fixed: was a stand mixer (186); 193 = commercial espresso machine (visually verified)",
+      "support": "FLOOR_STANDING",
+      "roles": [
+        "coffee_source",
+        "drink_source"
+      ],
+      "env_tags": [
+        "cafe",
+        "indoor"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "provider"
+    },
+    {
+      "prop_id": "cafe__food",
+      "sprite_path": "Kitchen_Singles_48x48_401.png",
+      "theme": "cafe",
+      "zone_type": "service",
+      "prop_class": "food_drink",
+      "affordances": [
+        "eat"
+      ],
+      "need_effects": {
+        "hunger": -50
+      },
+      "capacity": 4,
+      "interaction_duration": 10,
+      "availability_default": "available",
+      "event_relevance": [
+        "party",
+        "lunch"
+      ],
+      "placement_rules": {
+        "zone_function": "service",
+        "query": "food"
+      },
+      "note": "sprite: 401 = plate of donuts (food, clearly a pastry top-down); 384 moved to cafe__drink",
+      "support": "TABLETOP",
+      "roles": [
+        "consumable",
+        "food_item"
+      ],
+      "env_tags": [
+        "cafe",
+        "indoor",
+        "outdoor",
+        "public"
+      ],
+      "kind": "consumable",
+      "requires": [
+        "surface"
+      ],
+      "optional_with": [],
+      "functional_role_v2": "consumable"
+    },
+    {
+      "prop_id": "cafe__drink",
+      "sprite_path": "Kitchen_Singles_48x48_384.png",
+      "theme": "cafe",
+      "zone_type": "service",
+      "prop_class": "food_drink",
+      "affordances": [
+        "drink"
+      ],
+      "need_effects": {
+        "thirst": -55
+      },
+      "capacity": 2,
+      "interaction_duration": 4,
+      "availability_default": "available",
+      "event_relevance": [
+        "party",
+        "closing"
+      ],
+      "placement_rules": {
+        "zone_function": "service",
+        "query": "drink"
+      },
+      "note": "sprite: 384 (round mug/cup, reads as a drink top-down) \u2014 moved here from cafe__food per user",
+      "support": "TABLETOP",
+      "roles": [
+        "consumable",
+        "drink_item"
+      ],
+      "env_tags": [
+        "cafe",
+        "indoor",
+        "outdoor",
+        "public"
+      ],
+      "kind": "consumable",
+      "requires": [
+        "surface"
+      ],
+      "optional_with": [],
+      "functional_role_v2": "consumable"
+    },
+    {
+      "prop_id": "cafe__table",
+      "sprite_path": "Kitchen_Singles_48x48_323.png",
+      "theme": "cafe",
+      "zone_type": "seating",
+      "prop_class": "seating",
+      "affordances": [
+        "sit"
+      ],
+      "need_effects": {
+        "energy": 25,
+        "stress": -10
+      },
+      "capacity": 1,
+      "interaction_duration": 12,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "seating",
+        "query": "table"
+      },
+      "note": "",
+      "support": "SURFACE",
+      "roles": [
+        "dining",
+        "surface",
+        "table"
+      ],
+      "env_tags": [
+        "cafe",
+        "indoor",
+        "outdoor",
+        "public"
+      ],
+      "kind": "structural",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "surface"
+    },
+    {
+      "prop_id": "cafe__chair",
+      "sprite_path": "Kitchen_Bench_48x48_283_284.png",
+      "theme": "cafe",
+      "zone_type": "seating",
+      "prop_class": "seating",
+      "affordances": [
+        "sit"
+      ],
+      "need_effects": {
+        "energy": 25,
+        "stress": -10
+      },
+      "capacity": 1,
+      "interaction_duration": 12,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "seating",
+        "query": "chair"
+      },
+      "note": "",
+      "support": "SEAT",
+      "roles": [
+        "seat"
+      ],
+      "env_tags": [
+        "cafe",
+        "indoor",
+        "outdoor",
+        "public"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "seat"
+    },
+    {
+      "prop_id": "cafe__sink",
+      "sprite_path": "Kitchen_Singles_48x48_144.png",
+      "theme": "cafe",
+      "zone_type": "hygiene",
+      "prop_class": "sanitation",
+      "affordances": [
+        "wash"
+      ],
+      "need_effects": {
+        "stress": -10
+      },
+      "capacity": 1,
+      "interaction_duration": 5,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "hygiene",
+        "query": "sink"
+      },
+      "note": "",
+      "support": "FLOOR_STANDING",
+      "roles": [
+        "sanitation",
+        "sink"
+      ],
+      "env_tags": [
+        "cafe",
+        "indoor"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [
+        "mirror"
+      ],
+      "functional_role_v2": "sanitation"
+    },
+    {
+      "prop_id": "cafe__fridge",
+      "sprite_path": "Kitchen_Singles_48x48_162.png",
+      "theme": "cafe",
+      "zone_type": "service",
+      "prop_class": "food_drink",
+      "affordances": [
+        "refill"
+      ],
+      "need_effects": {
+        "thirst": -30,
+        "hunger": -20
+      },
+      "capacity": 2,
+      "interaction_duration": 4,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "service",
+        "query": "fridge"
+      },
+      "note": "",
+      "support": "FLOOR_STANDING",
+      "roles": [],
+      "env_tags": [
+        "cafe",
+        "indoor"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "provider"
+    },
+    {
+      "prop_id": "cafe__counter",
+      "sprite_path": "Kitchen_Singles_48x48_408.png",
+      "theme": "cafe",
+      "zone_type": "service",
+      "prop_class": "surface",
+      "affordances": [
+        "pay"
+      ],
+      "need_effects": {},
+      "capacity": 1,
+      "interaction_duration": 5,
+      "availability_default": "available",
+      "event_relevance": [
+        "closing",
+        "sale"
+      ],
+      "placement_rules": {
+        "zone_function": "service",
+        "query": "counter"
+      },
+      "note": "",
+      "support": "SURFACE",
+      "roles": [
+        "counter",
+        "retail",
+        "surface"
+      ],
+      "env_tags": [
+        "cafe",
+        "indoor"
+      ],
+      "kind": "structural",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "provider"
+    },
+    {
+      "prop_id": "living_room__couch",
+      "sprite_path": "Living_Room_Singles_48x48_6.png",
+      "theme": "living_room",
+      "zone_type": "seating",
+      "prop_class": "seating",
+      "affordances": [
+        "rest"
+      ],
+      "need_effects": {
+        "energy": 35,
+        "stress": -15
+      },
+      "capacity": 2,
+      "interaction_duration": 18,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "seating",
+        "query": "couch"
+      },
+      "note": "",
+      "support": "SEAT",
+      "roles": [
+        "rest_spot",
+        "seat"
+      ],
+      "env_tags": [
+        "indoor",
+        "living_room"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "seat"
+    },
+    {
+      "prop_id": "living_room__tv",
+      "sprite_path": "Modern_Office_Singles_48x48_161.png",
+      "theme": "living_room",
+      "zone_type": "activity",
+      "prop_class": "device",
+      "affordances": [
+        "watch"
+      ],
+      "need_effects": {
+        "curiosity": -25,
+        "stress": -8
+      },
+      "capacity": 4,
+      "interaction_duration": 20,
+      "availability_default": "available",
+      "event_relevance": [
+        "show"
+      ],
+      "placement_rules": {
+        "zone_function": "activity",
+        "query": "tv"
+      },
+      "note": "",
+      "support": "FLOOR_STANDING",
+      "roles": [],
+      "env_tags": [
+        "indoor",
+        "living_room"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "fixture"
+    },
+    {
+      "prop_id": "living_room__bookshelf",
+      "sprite_path": "Living_Room_Singles_48x48_122.png",
+      "theme": "living_room",
+      "zone_type": "activity",
+      "prop_class": "surface",
+      "affordances": [
+        "read"
+      ],
+      "need_effects": {
+        "curiosity": -25,
+        "stress": -8
+      },
+      "capacity": 2,
+      "interaction_duration": 12,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "activity",
+        "query": "bookshelf"
+      },
+      "note": "",
+      "support": "SURFACE",
+      "roles": [
+        "exhibit",
+        "surface"
+      ],
+      "env_tags": [
+        "indoor",
+        "living_room"
+      ],
+      "kind": "structural",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "surface"
+    },
+    {
+      "prop_id": "living_room__lamp",
+      "sprite_path": "Living_Room_Singles_48x48_87.png",
+      "theme": "living_room",
+      "zone_type": "activity",
+      "prop_class": "decor",
+      "affordances": [
+        "observe"
+      ],
+      "need_effects": {
+        "curiosity": -25
+      },
+      "capacity": 6,
+      "interaction_duration": 6,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "activity",
+        "query": "lamp"
+      },
+      "note": "",
+      "support": "FLOOR_STANDING",
+      "roles": [
+        "exhibit"
+      ],
+      "env_tags": [
+        "indoor",
+        "living_room"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "fixture"
+    },
+    {
+      "prop_id": "living_room__table",
+      "sprite_path": "Living_Room_Singles_48x48_53.png",
+      "theme": "living_room",
+      "zone_type": "seating",
+      "prop_class": "seating",
+      "affordances": [
+        "sit"
+      ],
+      "need_effects": {
+        "energy": 25,
+        "stress": -10
+      },
+      "capacity": 1,
+      "interaction_duration": 12,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "seating",
+        "query": "table"
+      },
+      "note": "",
+      "support": "SURFACE",
+      "roles": [
+        "dining",
+        "surface",
+        "table"
+      ],
+      "env_tags": [
+        "indoor",
+        "living_room",
+        "outdoor",
+        "public"
+      ],
+      "kind": "structural",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "surface"
+    },
+    {
+      "prop_id": "living_room__plant",
+      "sprite_path": "Living_Room_Singles_48x48_17.png",
+      "theme": "living_room",
+      "zone_type": "activity",
+      "prop_class": "decor",
+      "affordances": [
+        "observe"
+      ],
+      "need_effects": {
+        "curiosity": -25
+      },
+      "capacity": 6,
+      "interaction_duration": 6,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "activity",
+        "query": "plant"
+      },
+      "note": "",
+      "support": "FLOOR_STANDING",
+      "roles": [
+        "exhibit"
+      ],
+      "env_tags": [
+        "indoor",
+        "living_room",
+        "outdoor",
+        "public"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "fixture"
+    },
+    {
+      "prop_id": "bathroom__toilet",
+      "sprite_path": "Bathroom_Singles_48x48_31.png",
+      "theme": "bathroom",
+      "zone_type": "hygiene",
+      "prop_class": "sanitation",
+      "affordances": [
+        "relieve"
+      ],
+      "need_effects": {
+        "bladder": -80
+      },
+      "capacity": 1,
+      "interaction_duration": 6,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "hygiene",
+        "query": "toilet"
+      },
+      "note": "",
+      "support": "FLOOR_STANDING",
+      "roles": [
+        "sanitation",
+        "toilet"
+      ],
+      "env_tags": [
+        "bathroom",
+        "indoor"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [
+        "sink"
+      ],
+      "functional_role_v2": "sanitation"
+    },
+    {
+      "prop_id": "bathroom__sink",
+      "sprite_path": "Bathroom_Singles_48x48_9.png",
+      "theme": "bathroom",
+      "zone_type": "hygiene",
+      "prop_class": "sanitation",
+      "affordances": [
+        "wash"
+      ],
+      "need_effects": {
+        "stress": -10
+      },
+      "capacity": 1,
+      "interaction_duration": 5,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "hygiene",
+        "query": "sink"
+      },
+      "note": "",
+      "support": "FLOOR_STANDING",
+      "roles": [
+        "sanitation",
+        "sink"
+      ],
+      "env_tags": [
+        "bathroom",
+        "indoor"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [
+        "mirror"
+      ],
+      "functional_role_v2": "sanitation"
+    },
+    {
+      "prop_id": "bathroom__shower",
+      "sprite_path": "Bathroom_Singles_48x48_151.png",
+      "theme": "bathroom",
+      "zone_type": "hygiene",
+      "prop_class": "sanitation",
+      "affordances": [
+        "wash"
+      ],
+      "need_effects": {
+        "stress": -10
+      },
+      "capacity": 1,
+      "interaction_duration": 5,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "hygiene",
+        "query": "shower"
+      },
+      "note": "",
+      "support": "FLOOR_STANDING",
+      "roles": [
+        "sanitation",
+        "sink"
+      ],
+      "env_tags": [
+        "bathroom",
+        "indoor"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "sanitation"
+    },
+    {
+      "prop_id": "bathroom__bath",
+      "sprite_path": "Bathroom_Singles_48x48_151.png",
+      "theme": "bathroom",
+      "zone_type": "hygiene",
+      "prop_class": "sanitation",
+      "affordances": [
+        "wash"
+      ],
+      "need_effects": {
+        "stress": -10
+      },
+      "capacity": 1,
+      "interaction_duration": 5,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "hygiene",
+        "query": "bath"
+      },
+      "note": "",
+      "support": "FLOOR_STANDING",
+      "roles": [
+        "sanitation",
+        "sink"
+      ],
+      "env_tags": [
+        "bathroom",
+        "indoor"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "sanitation"
+    },
+    {
+      "prop_id": "bedroom__bed",
+      "sprite_path": "Bedroom_Singles_48x48_4.png",
+      "theme": "bedroom",
+      "zone_type": "seating",
+      "prop_class": "seating",
+      "affordances": [
+        "sleep"
+      ],
+      "need_effects": {
+        "energy": 60,
+        "stress": -20
+      },
+      "capacity": 1,
+      "interaction_duration": 40,
+      "availability_default": "available",
+      "event_relevance": [
+        "night"
+      ],
+      "placement_rules": {
+        "zone_function": "seating",
+        "query": "bed"
+      },
+      "note": "",
+      "support": "SEAT",
+      "roles": [
+        "bed",
+        "rest_spot"
+      ],
+      "env_tags": [
+        "bedroom",
+        "indoor"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "seat"
+    },
+    {
+      "prop_id": "bedroom__wardrobe",
+      "sprite_path": "Bedroom_Singles_48x48_535.png",
+      "theme": "bedroom",
+      "zone_type": "activity",
+      "prop_class": "surface",
+      "affordances": [
+        "browse"
+      ],
+      "need_effects": {
+        "curiosity": -15
+      },
+      "capacity": 4,
+      "interaction_duration": 8,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "activity",
+        "query": "wardrobe"
+      },
+      "note": "",
+      "support": "SURFACE",
+      "roles": [
+        "retail",
+        "surface"
+      ],
+      "env_tags": [
+        "bedroom",
+        "indoor"
+      ],
+      "kind": "structural",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "seat"
+    },
+    {
+      "prop_id": "bedroom__desk",
+      "sprite_path": "Bedroom_Singles_48x48_412.png",
+      "theme": "bedroom",
+      "zone_type": "work",
+      "prop_class": "surface",
+      "affordances": [
+        "work"
+      ],
+      "need_effects": {
+        "taskProgress": -40,
+        "energy": -10
+      },
+      "capacity": 1,
+      "interaction_duration": 24,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "work",
+        "query": "desk"
+      },
+      "note": "",
+      "support": "SURFACE",
+      "roles": [
+        "desk",
+        "surface",
+        "workstation"
+      ],
+      "env_tags": [
+        "bedroom",
+        "indoor"
+      ],
+      "kind": "structural",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "workstation"
+    },
+    {
+      "prop_id": "bedroom__lamp",
+      "sprite_path": "Bedroom_Singles_48x48_544.png",
+      "theme": "bedroom",
+      "zone_type": "activity",
+      "prop_class": "decor",
+      "affordances": [
+        "observe"
+      ],
+      "need_effects": {
+        "curiosity": -25
+      },
+      "capacity": 6,
+      "interaction_duration": 6,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "activity",
+        "query": "lamp"
+      },
+      "note": "",
+      "support": "FLOOR_STANDING",
+      "roles": [
+        "exhibit"
+      ],
+      "env_tags": [
+        "bedroom",
+        "indoor"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "seat"
+    },
+    {
+      "prop_id": "gym__treadmill",
+      "sprite_path": "Gym_Singles_48x48_97.png",
+      "theme": "gym",
+      "zone_type": "activity",
+      "prop_class": "device",
+      "affordances": [
+        "exercise"
+      ],
+      "need_effects": {
+        "energy": -20,
+        "stress": -20,
+        "status": -10
+      },
+      "capacity": 1,
+      "interaction_duration": 18,
+      "availability_default": "available",
+      "event_relevance": [
+        "class"
+      ],
+      "placement_rules": {
+        "zone_function": "activity",
+        "query": "treadmill"
+      },
+      "note": "",
+      "support": "FLOOR_STANDING",
+      "roles": [
+        "exercise"
+      ],
+      "env_tags": [
+        "gym",
+        "indoor"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "workstation"
+    },
+    {
+      "prop_id": "gym__weights",
+      "sprite_path": "Gym_Singles_48x48_108.png",
+      "theme": "gym",
+      "zone_type": "activity",
+      "prop_class": "device",
+      "affordances": [
+        "exercise"
+      ],
+      "need_effects": {
+        "energy": -20,
+        "stress": -20,
+        "status": -10
+      },
+      "capacity": 1,
+      "interaction_duration": 18,
+      "availability_default": "available",
+      "event_relevance": [
+        "class"
+      ],
+      "placement_rules": {
+        "zone_function": "activity",
+        "query": "weights"
+      },
+      "note": "",
+      "support": "FLOOR_STANDING",
+      "roles": [
+        "exercise"
+      ],
+      "env_tags": [
+        "gym",
+        "indoor"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "workstation"
+    },
+    {
+      "prop_id": "gym__bench",
+      "sprite_path": "Gym_Singles_48x48_168.png",
+      "theme": "gym",
+      "zone_type": "seating",
+      "prop_class": "seating",
+      "affordances": [
+        "sit"
+      ],
+      "need_effects": {
+        "energy": 25,
+        "stress": -10
+      },
+      "capacity": 1,
+      "interaction_duration": 12,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "seating",
+        "query": "bench"
+      },
+      "note": "",
+      "support": "SEAT",
+      "roles": [
+        "seat"
+      ],
+      "env_tags": [
+        "gym",
+        "indoor",
+        "outdoor",
+        "public"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "seat"
+    },
+    {
+      "prop_id": "gym__water_station",
+      "sprite_path": "Gym_Singles_48x48_180.png",
+      "theme": "gym",
+      "zone_type": "service",
+      "prop_class": "food_drink",
+      "affordances": [
+        "drink"
+      ],
+      "need_effects": {
+        "thirst": -55
+      },
+      "capacity": 2,
+      "interaction_duration": 4,
+      "availability_default": "available",
+      "event_relevance": [
+        "party",
+        "closing"
+      ],
+      "placement_rules": {
+        "zone_function": "service",
+        "query": "water_station"
+      },
+      "note": "",
+      "support": "FLOOR_STANDING",
+      "roles": [
+        "drink_source",
+        "water_source"
+      ],
+      "env_tags": [
+        "gym",
+        "indoor",
+        "outdoor",
+        "public"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "provider"
+    },
+    {
+      "prop_id": "hospital__bed",
+      "sprite_path": "Hospital_Singles_48x48_352.png",
+      "theme": "hospital",
+      "zone_type": "seating",
+      "prop_class": "seating",
+      "affordances": [
+        "sleep"
+      ],
+      "need_effects": {
+        "energy": 60,
+        "stress": -20
+      },
+      "capacity": 1,
+      "interaction_duration": 40,
+      "availability_default": "available",
+      "event_relevance": [
+        "night"
+      ],
+      "placement_rules": {
+        "zone_function": "seating",
+        "query": "bed"
+      },
+      "note": "",
+      "support": "SEAT",
+      "roles": [
+        "bed",
+        "rest_spot"
+      ],
+      "env_tags": [
+        "hospital",
+        "indoor"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "seat"
+    },
+    {
+      "prop_id": "hospital__nurse_station",
+      "sprite_path": "Hospital_Singles_48x48_138.png",
+      "theme": "hospital",
+      "zone_type": "service",
+      "prop_class": "surface",
+      "affordances": [
+        "talk_to_staff"
+      ],
+      "need_effects": {
+        "loneliness": -10
+      },
+      "capacity": 1,
+      "interaction_duration": 6,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "service",
+        "query": "nurse_station"
+      },
+      "note": "",
+      "support": "SURFACE",
+      "roles": [
+        "surface"
+      ],
+      "env_tags": [
+        "hospital",
+        "indoor"
+      ],
+      "kind": "structural",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "provider"
+    },
+    {
+      "prop_id": "hospital__medicine",
+      "sprite_path": "Hospital_Singles_48x48_65.png",
+      "theme": "hospital",
+      "zone_type": "service",
+      "prop_class": null,
+      "affordances": [
+        "receive"
+      ],
+      "need_effects": {},
+      "capacity": 1,
+      "interaction_duration": 5,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "service",
+        "query": "medicine"
+      },
+      "note": "",
+      "support": "TABLETOP",
+      "roles": [],
+      "env_tags": [
+        "hospital",
+        "indoor"
+      ],
+      "kind": "interactive",
+      "requires": [
+        "surface"
+      ],
+      "optional_with": [],
+      "functional_role_v2": "consumable"
+    },
+    {
+      "prop_id": "hospital__waiting_chair",
+      "sprite_path": "Hospital_Singles_48x48_457.png",
+      "theme": "hospital",
+      "zone_type": "seating",
+      "prop_class": "seating",
+      "affordances": [
+        "sit"
+      ],
+      "need_effects": {
+        "energy": 25,
+        "stress": -10
+      },
+      "capacity": 1,
+      "interaction_duration": 12,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "seating",
+        "query": "waiting_chair"
+      },
+      "note": "",
+      "support": "SEAT",
+      "roles": [
+        "seat"
+      ],
+      "env_tags": [
+        "hospital",
+        "indoor",
+        "outdoor",
+        "public"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "seat"
+    },
+    {
+      "prop_id": "office__desk",
+      "sprite_path": "Modern_Office_Singles_48x48_325.png",
+      "theme": "office",
+      "zone_type": "work",
+      "prop_class": "surface",
+      "affordances": [
+        "work"
+      ],
+      "need_effects": {
+        "taskProgress": -40,
+        "energy": -10
+      },
+      "capacity": 1,
+      "interaction_duration": 24,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "work",
+        "query": "desk"
+      },
+      "note": "",
+      "support": "SURFACE",
+      "roles": [
+        "desk",
+        "surface",
+        "workstation"
+      ],
+      "env_tags": [
+        "indoor",
+        "office"
+      ],
+      "kind": "structural",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "workstation"
+    },
+    {
+      "prop_id": "office__computer",
+      "sprite_path": "Modern_Office_Singles_48x48_231.png",
+      "theme": "office",
+      "zone_type": "work",
+      "prop_class": "surface",
+      "affordances": [
+        "work"
+      ],
+      "need_effects": {
+        "taskProgress": -40,
+        "energy": -10
+      },
+      "capacity": 1,
+      "interaction_duration": 24,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "work",
+        "query": "computer"
+      },
+      "note": "",
+      "support": "TABLETOP",
+      "roles": [
+        "workstation",
+        "workstation_item"
+      ],
+      "env_tags": [
+        "indoor",
+        "office"
+      ],
+      "kind": "interactive",
+      "requires": [
+        "surface"
+      ],
+      "optional_with": [],
+      "functional_role_v2": "workstation"
+    },
+    {
+      "prop_id": "office__printer",
+      "sprite_path": "Modern_Office_Singles_48x48_152.png",
+      "theme": "office",
+      "zone_type": "work",
+      "prop_class": "surface",
+      "affordances": [
+        "work"
+      ],
+      "need_effects": {
+        "taskProgress": -40,
+        "energy": -10
+      },
+      "capacity": 1,
+      "interaction_duration": 24,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "work",
+        "query": "printer"
+      },
+      "note": "",
+      "support": "FLOOR_STANDING",
+      "roles": [
+        "workstation"
+      ],
+      "env_tags": [
+        "indoor",
+        "office"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "workstation"
+    },
+    {
+      "prop_id": "office__meeting_table",
+      "sprite_path": "Modern_Office_Singles_48x48_193.png",
+      "theme": "office",
+      "zone_type": "work",
+      "prop_class": "surface",
+      "affordances": [
+        "work"
+      ],
+      "need_effects": {
+        "taskProgress": -40,
+        "energy": -10
+      },
+      "capacity": 1,
+      "interaction_duration": 24,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "work",
+        "query": "meeting_table"
+      },
+      "note": "",
+      "support": "SURFACE",
+      "roles": [
+        "dining",
+        "surface",
+        "table",
+        "workstation"
+      ],
+      "env_tags": [
+        "indoor",
+        "office",
+        "outdoor",
+        "public"
+      ],
+      "kind": "structural",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "surface"
+    },
+    {
+      "prop_id": "office__coffee_machine",
+      "sprite_path": "Modern_Office_Singles_48x48_315.png",
+      "theme": "office",
+      "zone_type": "service",
+      "prop_class": "food_drink",
+      "affordances": [
+        "drink"
+      ],
+      "need_effects": {
+        "thirst": -55
+      },
+      "capacity": 2,
+      "interaction_duration": 4,
+      "availability_default": "available",
+      "event_relevance": [
+        "party",
+        "closing"
+      ],
+      "placement_rules": {
+        "zone_function": "service",
+        "query": "coffee_machine"
+      },
+      "note": "",
+      "support": "FLOOR_STANDING",
+      "roles": [
+        "coffee_source",
+        "drink_source"
+      ],
+      "env_tags": [
+        "indoor",
+        "office"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "provider"
+    },
+    {
+      "prop_id": "museum__display",
+      "sprite_path": "Museum_Display_324_326.png",
+      "theme": "museum",
+      "zone_type": "activity",
+      "prop_class": "decor",
+      "affordances": [
+        "observe"
+      ],
+      "need_effects": {
+        "curiosity": -25
+      },
+      "capacity": 6,
+      "interaction_duration": 6,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "activity",
+        "query": "display"
+      },
+      "note": "",
+      "support": "SURFACE",
+      "roles": [
+        "exhibit",
+        "surface"
+      ],
+      "env_tags": [
+        "indoor",
+        "museum"
+      ],
+      "kind": "structural",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "fixture"
+    },
+    {
+      "prop_id": "museum__bench",
+      "sprite_path": "Museum_Singles_48x48_36.png",
+      "theme": "museum",
+      "zone_type": "seating",
+      "prop_class": "seating",
+      "affordances": [
+        "sit"
+      ],
+      "need_effects": {
+        "energy": 25,
+        "stress": -10
+      },
+      "capacity": 1,
+      "interaction_duration": 12,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "seating",
+        "query": "bench"
+      },
+      "note": "",
+      "support": "SEAT",
+      "roles": [
+        "seat"
+      ],
+      "env_tags": [
+        "indoor",
+        "museum",
+        "outdoor",
+        "public"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "seat"
+    },
+    {
+      "prop_id": "museum__ticket_counter",
+      "sprite_path": "Museum_Ticket_Counter_1.png",
+      "theme": "museum",
+      "zone_type": "service",
+      "prop_class": "surface",
+      "affordances": [
+        "pay"
+      ],
+      "need_effects": {},
+      "capacity": 1,
+      "interaction_duration": 5,
+      "availability_default": "available",
+      "event_relevance": [
+        "closing",
+        "sale"
+      ],
+      "placement_rules": {
+        "zone_function": "service",
+        "query": "ticket_counter"
+      },
+      "note": "",
+      "support": "SURFACE",
+      "roles": [
+        "counter",
+        "retail",
+        "surface"
+      ],
+      "env_tags": [
+        "indoor",
+        "museum"
+      ],
+      "kind": "structural",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "provider"
+    },
+    {
+      "prop_id": "museum__information_board",
+      "sprite_path": "Museum_Singles_48x48_394.png",
+      "theme": "museum",
+      "zone_type": "activity",
+      "prop_class": "surface",
+      "affordances": [
+        "read"
+      ],
+      "need_effects": {
+        "curiosity": -25,
+        "stress": -8
+      },
+      "capacity": 2,
+      "interaction_duration": 12,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "activity",
+        "query": "information_board"
+      },
+      "note": "",
+      "support": "SURFACE",
+      "roles": [
+        "exhibit",
+        "surface"
+      ],
+      "env_tags": [
+        "indoor",
+        "museum"
+      ],
+      "kind": "structural",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "fixture"
+    },
+    {
+      "prop_id": "shop__shelf",
+      "sprite_path": "Grocery_Store_Singles_48x48_101.png",
+      "theme": "shop",
+      "zone_type": "activity",
+      "prop_class": "surface",
+      "affordances": [
+        "browse"
+      ],
+      "need_effects": {
+        "curiosity": -15
+      },
+      "capacity": 4,
+      "interaction_duration": 8,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "activity",
+        "query": "shelf"
+      },
+      "note": "",
+      "support": "SURFACE",
+      "roles": [
+        "retail",
+        "retail_display",
+        "surface"
+      ],
+      "env_tags": [
+        "indoor",
+        "shop"
+      ],
+      "kind": "structural",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "surface"
+    },
+    {
+      "prop_id": "shop__checkout_counter",
+      "sprite_path": "Grocery_Store_Singles_48x48_166.png",
+      "theme": "shop",
+      "zone_type": "service",
+      "prop_class": "surface",
+      "affordances": [
+        "pay"
+      ],
+      "need_effects": {},
+      "capacity": 1,
+      "interaction_duration": 5,
+      "availability_default": "available",
+      "event_relevance": [
+        "closing",
+        "sale"
+      ],
+      "placement_rules": {
+        "zone_function": "service",
+        "query": "checkout_counter"
+      },
+      "note": "",
+      "support": "SURFACE",
+      "roles": [
+        "counter",
+        "retail",
+        "surface"
+      ],
+      "env_tags": [
+        "indoor",
+        "shop"
+      ],
+      "kind": "structural",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "provider"
+    },
+    {
+      "prop_id": "shop__food",
+      "sprite_path": "Grocery_Store_Singles_48x48_220.png",
+      "theme": "shop",
+      "zone_type": "service",
+      "prop_class": "food_drink",
+      "affordances": [
+        "eat"
+      ],
+      "need_effects": {
+        "hunger": -50
+      },
+      "capacity": 4,
+      "interaction_duration": 10,
+      "availability_default": "available",
+      "event_relevance": [
+        "party",
+        "lunch"
+      ],
+      "placement_rules": {
+        "zone_function": "service",
+        "query": "food"
+      },
+      "note": "",
+      "support": "TABLETOP",
+      "roles": [
+        "consumable",
+        "food_item"
+      ],
+      "env_tags": [
+        "indoor",
+        "outdoor",
+        "public",
+        "shop"
+      ],
+      "kind": "consumable",
+      "requires": [
+        "surface"
+      ],
+      "optional_with": [],
+      "functional_role_v2": "consumable"
+    },
+    {
+      "prop_id": "shop__drink",
+      "sprite_path": "Grocery_Cooler_172_173.png",
+      "theme": "shop",
+      "zone_type": "service",
+      "prop_class": "food_drink",
+      "affordances": [
+        "drink"
+      ],
+      "need_effects": {
+        "thirst": -55
+      },
+      "capacity": 2,
+      "interaction_duration": 4,
+      "availability_default": "available",
+      "event_relevance": [
+        "party",
+        "closing"
+      ],
+      "placement_rules": {
+        "zone_function": "service",
+        "query": "drink"
+      },
+      "note": "",
+      "support": "TABLETOP",
+      "roles": [
+        "consumable",
+        "drink_item"
+      ],
+      "env_tags": [
+        "indoor",
+        "outdoor",
+        "public",
+        "shop"
+      ],
+      "kind": "consumable",
+      "requires": [
+        "surface"
+      ],
+      "optional_with": [],
+      "functional_role_v2": "consumable"
+    },
+    {
+      "prop_id": "shop__cart",
+      "sprite_path": "Grocery_Store_Singles_48x48_20.png",
+      "theme": "shop",
+      "zone_type": "service",
+      "prop_class": "food_drink",
+      "affordances": [
+        "buy"
+      ],
+      "need_effects": {
+        "curiosity": -10
+      },
+      "capacity": 2,
+      "interaction_duration": 5,
+      "availability_default": "available",
+      "event_relevance": [
+        "sale"
+      ],
+      "placement_rules": {
+        "zone_function": "service",
+        "query": "cart"
+      },
+      "note": "",
+      "support": "FLOOR_STANDING",
+      "roles": [
+        "retail"
+      ],
+      "env_tags": [
+        "indoor",
+        "outdoor",
+        "public",
+        "shop"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "fixture"
+    },
+    {
+      "prop_id": "cafe__vending_machine",
+      "sprite_path": "Kitchen_Singles_48x48_194.png",
+      "theme": "cafe",
+      "zone_type": "service",
+      "prop_class": "food_drink",
+      "affordances": [
+        "eat"
+      ],
+      "need_effects": {
+        "hunger": -35,
+        "thirst": -20
+      },
+      "capacity": 1,
+      "interaction_duration": 3,
+      "availability_default": "available",
+      "event_relevance": [],
+      "placement_rules": {
+        "zone_function": "service",
+        "query": "vending_machine"
+      },
+      "note": "added from visual QA (bottled snacks/drinks machine)",
+      "support": "FLOOR_STANDING",
+      "roles": [
+        "food_source"
+      ],
+      "env_tags": [
+        "cafe",
+        "indoor",
+        "outdoor",
+        "public"
+      ],
+      "kind": "interactive",
+      "requires": [],
+      "optional_with": [],
+      "functional_role_v2": "provider"
+    }
+  ]
+}

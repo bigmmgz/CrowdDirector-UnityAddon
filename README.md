@@ -83,41 +83,57 @@ The first run creates a virtual environment and installs PyTorch. It then serves
 
 ## Quick start
 
-Add a **Crowd Director Client** component to any GameObject, then implement `ICrowdAgent` on your
-agents:
+A generated scene decides its own cast — how many agents, of which types, with which personalities and
+starting needs — and the server assigns each one an id that every later message is keyed on. So you
+supply a **factory**, and CrowdDirector creates one of your agents per spec.
 
 ```csharp
 using UnityEngine;
-using UnityEngine.AI;
 using CrowdDirector;
 
+public class VillagerFactory : MonoBehaviour, ICrowdAgentFactory
+{
+    public Villager prefab;
+
+    public ICrowdAgent CreateAgent(CrowdAgentSpec spec, CrowdScene scene)
+    {
+        var villager = Instantiate(prefab, spec.StartPosition, Quaternion.identity);
+        villager.Bind(spec, scene);          // must report spec.Id as its AgentId
+        return villager;
+    }
+
+    public void DestroyAgent(ICrowdAgent agent) => Destroy(((MonoBehaviour)agent).gameObject);
+}
+```
+
+Your agent implements `ICrowdAgent` — reporting its state, and acting on the director's decisions:
+
+```csharp
 public class Villager : MonoBehaviour, ICrowdAgent
 {
-    public string AgentId         => _id;
-    public string AgentName       => _name;
-    public string AgentType       => "visitor";
-    public string PersonalityType => "casual_young";
+    public string AgentId         => _spec.Id;          // the server's id, not your own
+    public string AgentName       => _spec.Name;
+    public string AgentType       => _spec.AgentType;
+    public string PersonalityType => _spec.PersonalityType;
 
-    public Vector2   Position      => transform.position;
-    public string    CurrentZoneId => _zone;
-    public CrowdNeeds Needs        => _needs;
+    public Vector2    Position      => transform.position;
+    public string     CurrentZoneId => _zone;
+    public CrowdNeeds Needs         => _needs;
 
     public void DirectorMoveToZone(string zoneId, string reason)
-        => _agent.SetDestination(CrowdScene.ZoneCentre(zoneId));
+        => _nav.SetDestination(_scene.ZoneCentre(zoneId));
 
-    public void DirectorRest(string reason)  => _animator.Play("Sit");
-    public void DirectorIdle(string reason)  => _agent.ResetPath();
+    public void DirectorRest(string reason) => _animator.Play("Sit");
+    public void DirectorIdle(string reason) => _nav.ResetPath();
     // ...
 }
 ```
 
-Register them and direct the crowd:
+Add a **Crowd Director Client** to a GameObject, point its `agentFactory` field at your factory, and
+direct the crowd:
 
 ```csharp
 var director = GetComponent<CrowdDirectorClient>();
-
-foreach (var villager in FindObjectsOfType<Villager>())
-    director.RegisterAgent(villager);
 
 director.GenerateScene("a busy hospital waiting room at visiting hour");
 director.DescribeEvent("the vending machine is out of order");
@@ -163,9 +179,11 @@ across ticks until cleared.
 | `ClearEvent()` | Cancel the active event and any standing orders |
 | `Connect()` / `Disconnect()` | Manage the connection manually |
 | `IsConnected`, `IsSceneReady`, `AgentCount` | State |
+| `CurrentScene` | The generated scene: zones, cast, and zone lookups |
+| `AgentFactory` | Set in code, or assign the `agentFactory` component in the inspector |
 
-**Inspector:** `serverUrl`, `autoConnect`, `tickInterval` (default 3 s), `stateInterval`
-(default 1.5 s), `logActions`.
+**Inspector:** `serverUrl`, `autoConnect`, `agentFactory`, `tickInterval` (default 3 s),
+`stateInterval` (default 1.5 s), `logActions`.
 
 **Events:** `Connected`, `Disconnected`, `SceneReady`, `ActionsReceived`, `ServerError`.
 
@@ -186,6 +204,20 @@ across ticks until cleared.
 
 `AgentType` is regenerated for every scene; key your own logic on `PersonalityType`, which comes from
 a fixed vocabulary.
+
+### `ICrowdAgentFactory`
+
+| Member | Description |
+|---|---|
+| `CreateAgent(CrowdAgentSpec, CrowdScene)` | Instantiate one agent; it must report `spec.Id` as its `AgentId` |
+| `DestroyAgent(ICrowdAgent)` | Tear down an agent when a new scene replaces the current one |
+
+### `CrowdScene` / `CrowdAgentSpec` / `CrowdZone`
+
+`CrowdScene` carries the generated `Zones` and `Agents`, plus `ZoneCentre(zoneId)` and
+`TryGetZone(...)` for turning a director decision into a world position. `CrowdAgentSpec` gives an
+agent's `Id`, `Name`, `AgentType`, `PersonalityType`, `StartPosition`, `Color` and `InitialNeeds`.
+`CrowdZone` gives a room's `Id`, `Label`, `ZoneType`, `Bounds` and `Centre`.
 
 ### `CrowdNeeds`
 

@@ -25,7 +25,8 @@ import prop_grammar   # generic relational prop grammar (functional clusters; re
 # Which prop set to draw smart objects from — SWAPPABLE without replacing the other (A/B test LPC vs LimeZu):
 #   ECGP_PROP_SET=limezu (default)  -> smart_object_catalog_limezu.json
 #   ECGP_PROP_SET=lpc               -> smart_object_catalog_lpc.json   (built by assetgen.lpc_objects)
-_ASSETS = os.path.join(os.path.dirname(__file__), "..", "CrowdSim", "Assets", "StreamingAssets", "AssetDataset")
+_ASSETS = os.environ.get("CROWDDIRECTOR_ASSETS",
+                         os.path.join(os.path.dirname(__file__), "assets"))
 _PROP_SET = os.environ.get("ECGP_PROP_SET", "limezu").strip().lower()   # LimeZu default (LPC set too limited —
                                                                         # 102 sliced props; switch back with =lpc)
 _CATALOG = os.path.join(_ASSETS, f"smart_object_catalog_{_PROP_SET}.json")

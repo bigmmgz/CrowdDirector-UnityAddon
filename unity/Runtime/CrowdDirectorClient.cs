@@ -44,19 +44,37 @@ namespace CrowdDirector
         [Tooltip("Seconds between state reports to the server.")]
         public float stateInterval = 1.5f;
 
+        [Header("Agents")]
+        [Tooltip("A component implementing ICrowdAgentFactory. One CreateAgent call is made per agent "
+               + "the generated scene calls for. Required: the server mints the agent ids, so agents "
+               + "must be created from the scene rather than registered into it.")]
+        public MonoBehaviour agentFactory;
+
         [Header("Debug")]
         public bool logActions = false;
 
         // ── events you can subscribe to ───────────────────────────────────────────────
         public event Action Connected;
         public event Action<string> Disconnected;
-        public event Action<JObject> SceneReady;
+        public event Action<CrowdScene> SceneReady;
         public event Action<IReadOnlyList<CrowdDirectorAction>> ActionsReceived;
         public event Action<string> ServerError;
 
         public bool IsConnected { get { return _socket != null && _socket.State == WebSocketState.Open; } }
         public bool IsSceneReady { get { return _sceneReady; } }
         public int AgentCount { get { return _agents.Count; } }
+
+        /// <summary>The scene most recently generated: its zones and cast. Null until one is ready.</summary>
+        public CrowdScene CurrentScene { get; private set; }
+
+        /// <summary>Assignable in code; otherwise taken from the `agentFactory` component.</summary>
+        public ICrowdAgentFactory AgentFactory
+        {
+            get { return _factory != null ? _factory : agentFactory as ICrowdAgentFactory; }
+            set { _factory = value; }
+        }
+
+        ICrowdAgentFactory _factory;
 
         readonly Dictionary<string, ICrowdAgent> _agents = new Dictionary<string, ICrowdAgent>();
         readonly ConcurrentQueue<string> _inbound = new ConcurrentQueue<string>();
@@ -104,6 +122,19 @@ namespace CrowdDirector
         }
 
         void OnDestroy() { Disconnect(); }
+
+        /// <summary>
+        /// Destroyed-object aware. `a == null` on an ICrowdAgent binds to plain reference equality,
+        /// because the interface carries no UnityEngine.Object constraint - so Unity's overloaded ==
+        /// is bypassed and a Destroy()ed MonoBehaviour sails through the guard, then throws
+        /// MissingReferenceException on the next property read. The cast restores the real check.
+        /// </summary>
+        static bool IsAlive(ICrowdAgent a)
+        {
+            UnityEngine.Object uo = a as UnityEngine.Object;
+            if (uo != null || a is UnityEngine.Object) return uo != null;
+            return a != null;
+        }
 
         // ── agent registry ────────────────────────────────────────────────────────────
 
@@ -217,7 +248,7 @@ namespace CrowdDirector
             foreach (KeyValuePair<string, ICrowdAgent> kv in _agents)
             {
                 ICrowdAgent a = kv.Value;
-                if (a == null) continue;
+                if (!IsAlive(a)) continue;
                 Vector2 p = a.Position;
                 data.Add(new
                 {
@@ -253,7 +284,18 @@ namespace CrowdDirector
         public void GenerateScene(string description)
         {
             _sceneReady = false;
-            SendJson(new { type = "generate_scene", description, render_mode = "library" });
+            // director_mode and behavior_engine are REQUIRED, not optional. The server defaults
+            // director_mode to "llm", which never builds the scene-affordance graph and instead calls
+            // a language model on every single tick. "dsag" is what routes decisions through the
+            // trained graph policy, which is the whole point of this package.
+            SendJson(new
+            {
+                type = "generate_scene",
+                description,
+                render_mode = "library",
+                director_mode = "dsag",
+                behavior_engine = "ecgp",
+            });
         }
 
         /// <summary>Free-text instruction - "the coffee machine is broken", "everyone leave".
@@ -291,10 +333,7 @@ namespace CrowdDirector
             switch (type)
             {
                 case "scene_ready":
-                    _sceneReady = true;
-                    _tickTimer = 0.5f;
-                    _stateTimer = 0f;
-                    if (SceneReady != null) SceneReady(msg);
+                    BuildScene(msg);
                     break;
 
                 case "actions":
@@ -311,6 +350,66 @@ namespace CrowdDirector
                 // generating / event_interpreted / sprite_* / lpc_* are demo-side concerns and are
                 // deliberately ignored by a director-only client.
             }
+        }
+
+        /// <summary>
+        /// Replace the current cast with the one the scene calls for. The server has already minted
+        /// each agent's id and keys every later message on it, so agents are created here rather than
+        /// registered from outside: an id the server did not mint is dropped inbound (it is not in
+        /// sim.agents) and outbound (it is not in _agents), leaving a crowd that never moves.
+        /// </summary>
+        void BuildScene(JObject msg)
+        {
+            CrowdScene scene = CrowdScene.FromJson(msg);
+            CurrentScene = scene;
+
+            ICrowdAgentFactory factory = AgentFactory;
+            if (factory == null)
+            {
+                Debug.LogError("[CrowdDirector] no ICrowdAgentFactory assigned - the scene defines " +
+                               scene.Agents.Count + " agents but none can be created, so nothing " +
+                               "will move. Assign one to the `agentFactory` field.");
+            }
+            else
+            {
+                foreach (KeyValuePair<string, ICrowdAgent> kv in _agents)
+                    if (IsAlive(kv.Value))
+                        try { factory.DestroyAgent(kv.Value); }
+                        catch (Exception e) { Debug.LogError("[CrowdDirector] DestroyAgent threw: " + e.Message); }
+                _agents.Clear();
+
+                foreach (CrowdAgentSpec spec in scene.Agents)
+                {
+                    ICrowdAgent a;
+                    try { a = factory.CreateAgent(spec, scene); }
+                    catch (Exception e)
+                    {
+                        Debug.LogError("[CrowdDirector] CreateAgent threw for '" + spec.Id + "': " + e.Message);
+                        continue;
+                    }
+                    if (!IsAlive(a)) continue;
+
+                    if (a.AgentId != spec.Id)
+                    {
+                        // Not a warning to be tidy: a mismatched id is dropped at both ends and the
+                        // agent simply never receives a decision, with nothing else to indicate why.
+                        Debug.LogError("[CrowdDirector] agent for spec '" + spec.Id + "' reports AgentId '" +
+                                       a.AgentId + "'. It must report the spec's Id or it will never " +
+                                       "be directed.");
+                        continue;
+                    }
+                    _agents[spec.Id] = a;
+                }
+            }
+
+            _sceneReady = true;
+            _tickTimer = 0.5f;
+            _stateTimer = 0f;
+
+            Debug.Log("[CrowdDirector] scene '" + scene.Name + "' ready - " + scene.Zones.Count +
+                      " zones, " + _agents.Count + "/" + scene.Agents.Count + " agents created.");
+
+            if (SceneReady != null) SceneReady(scene);
         }
 
         void ApplyActions(JArray actions)
@@ -330,7 +429,7 @@ namespace CrowdDirector
                 if (string.IsNullOrEmpty(a.AgentId)) continue;
 
                 ICrowdAgent agent;
-                if (!_agents.TryGetValue(a.AgentId, out agent) || agent == null) continue;
+                if (!_agents.TryGetValue(a.AgentId, out agent) || !IsAlive(agent)) continue;
 
                 if (logActions) Debug.Log("[CrowdDirector] " + a);
 
