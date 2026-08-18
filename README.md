@@ -1,99 +1,222 @@
 # CrowdDirector
 
-Natural-language crowd direction for Unity. Describe a scene in a sentence, type instructions at it
-while it runs — *"the coffee machine is broken"*, *"everyone leave"* — and a trained graph policy
-decides what each agent does, every tick, on your machine.
+Natural-language crowd direction for Unity, powered by a trained relational graph policy.
 
-You keep navigation, collision, reservations and animation. The add-on only decides **which target**
-and **which action**, which is precisely what it was trained to do alongside deterministic execution
-systems.
+![Unity](https://img.shields.io/badge/Unity-2021.3%2B-black?logo=unity&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
+![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
 
-```csharp
-public class MyAgent : MonoBehaviour, ICrowdAgent
+Describe a space in a sentence and CrowdDirector lays out its zones and populates it. While it runs,
+type instructions at the crowd — *"the coffee machine is broken"*, *"staff leave first"* — and every
+agent responds according to its own needs, role and relationships.
+
+A 442,000-parameter graph policy makes the per-agent decisions locally, at roughly **0.7 ms per agent
+decision** with **no API call per tick**. Your navigation, collision handling and animation stay
+exactly as they are: CrowdDirector chooses *what* each agent should do and *where*, and leaves the
+execution to you.
+
+---
+
+## Features
+
+- **Instruction-driven** — plain-English direction compiled against the live scene into a persistent
+  directive, not a one-shot prompt.
+- **Needs-driven agents** — a nine-value need model (hunger, thirst, bladder, energy, stress,
+  loneliness, group affinity, status, curiosity) with Maslow-style tier ordering.
+- **Social behaviour** — per-pair familiarity, trust and tension evolve into acquaintance, friendship
+  or avoidance, and feed back into who talks to whom.
+- **Emergencies** — evacuation is deterministic and instant, bypassing the language layer entirely.
+- **Scene generation** — zones, agent types, personalities and starting needs from one sentence.
+- **Scales** — decision cost is linear in agent count and independent of scene complexity.
+- **Engine-agnostic execution** — implement one interface and keep your own movement stack.
+
+---
+
+## Requirements
+
+| | |
+|---|---|
+| Unity | 2021.3 or later |
+| Python | 3.10 or later, for the director server |
+| Platforms | Windows, macOS, Linux — Editor and standalone |
+| Dependencies | `com.unity.nuget.newtonsoft-json` (resolved automatically) |
+
+An `ANTHROPIC_API_KEY` enables scene generation and free-text instructions. The per-agent director
+runs locally and does not use it.
+
+---
+
+## Installation
+
+### 1. Install the Unity package
+
+**Package Manager → + → Add package from git URL:**
+
+```
+https://github.com/bigmmgz/CrowdDirector-UnityAddon.git?path=/unity
+```
+
+Or add it to `Packages/manifest.json` directly:
+
+```json
 {
-    public string AgentId => name;
-    public Vector2 Position => transform.position;
-    public CrowdNeeds Needs => _needs;
-    // ...
-
-    public void DirectorMoveToZone(string zoneId, string reason) => _nav.SetDestination(ZoneCentre(zoneId));
-    public void DirectorRest(string reason) => _anim.Play("Sit");
+  "dependencies": {
+    "com.crowddirector.client": "https://github.com/bigmmgz/CrowdDirector-UnityAddon.git?path=/unity"
+  }
 }
 ```
 
-## How it is put together
-
-```
-Unity  ── ICrowdAgent state ──►  sidecar server  ──►  graph policy   (local, no API call)
-       ◄──── per-agent actions ──                ──►  Claude        (scene setup + instructions only)
-```
-
-The **per-tick director makes no API call.** A 442k-parameter relational graph policy runs locally at
-roughly 0.7 ms per agent decision. An `ANTHROPIC_API_KEY` is needed only for two authoring features:
-generating a scene from a description, and interpreting free-text instructions. Without a key, a
-scene you have already built still runs, and the deterministic instruction parser still handles the
-common phrasings.
-
-## Getting started
-
-**1. Start the sidecar.**
+### 2. Start the director server
 
 ```bash
-cd server
-./start.sh          # Windows: start.bat
-```
+git clone https://github.com/bigmmgz/CrowdDirector-UnityAddon.git
+cd CrowdDirector-UnityAddon/server
 
-First run creates a virtualenv and installs PyTorch (a few hundred MB, CPU-only, once). It then
-serves on `ws://localhost:8765`. To use scene generation, set a key first:
-
-```bash
 export ANTHROPIC_API_KEY=sk-ant-...     # Windows: set ANTHROPIC_API_KEY=sk-ant-...
+./start.sh                              # Windows: start.bat
 ```
 
-**2. Add the Unity package.** Window → Package Manager → **+** → *Add package from disk* → pick
-`unity/package.json`.
+The first run creates a virtual environment and installs PyTorch. It then serves on
+`ws://localhost:8765`, which is where the Unity client connects by default.
 
-**3. Wire it up.** Put `CrowdDirectorClient` on a GameObject, implement `ICrowdAgent` on your agents,
-and register them:
+---
+
+## Quick start
+
+Add a **Crowd Director Client** component to any GameObject, then implement `ICrowdAgent` on your
+agents:
 
 ```csharp
-director.RegisterAgent(myAgent);
+using UnityEngine;
+using UnityEngine.AI;
+using CrowdDirector;
+
+public class Villager : MonoBehaviour, ICrowdAgent
+{
+    public string AgentId         => _id;
+    public string AgentName       => _name;
+    public string AgentType       => "visitor";
+    public string PersonalityType => "casual_young";
+
+    public Vector2   Position      => transform.position;
+    public string    CurrentZoneId => _zone;
+    public CrowdNeeds Needs        => _needs;
+
+    public void DirectorMoveToZone(string zoneId, string reason)
+        => _agent.SetDestination(CrowdScene.ZoneCentre(zoneId));
+
+    public void DirectorRest(string reason)  => _animator.Play("Sit");
+    public void DirectorIdle(string reason)  => _agent.ResetPath();
+    // ...
+}
+```
+
+Register them and direct the crowd:
+
+```csharp
+var director = GetComponent<CrowdDirectorClient>();
+
+foreach (var villager in FindObjectsOfType<Villager>())
+    director.RegisterAgent(villager);
+
 director.GenerateScene("a busy hospital waiting room at visiting hour");
 director.DescribeEvent("the vending machine is out of order");
+director.TriggerEvent("fire_alarm", "Smoke in the east wing");
 ```
 
-## What ships
+---
+
+## How it works
 
 ```
-server/     the director stack, extracted from the research server
-  ecgp/       the graph policy, its runtime, and the capability compiler
-  dsag/       smart objects, affordances, needs
-  model/      full_graph_seed0/best.pt - the released checkpoint
-  PATCHES.md  every divergence from the original, and why
-unity/      the UPM client package
-  Runtime/    ICrowdAgent, CrowdNeeds, CrowdDirectorClient
+Unity                          Director server                    Policy
+─────                          ───────────────                    ──────
+ICrowdAgent state  ──────────►  scene graph        ──────────►  graph policy
+                                                                (local, per tick)
+per-agent actions  ◄──────────  target + action    ◄──────────
 ```
 
-The server is an **extraction, not a rewrite** — the modules are byte-for-byte copies of the code
-that produced the published results, with two path defaults changed so it runs outside a checkout.
-[server/PATCHES.md](server/PATCHES.md) lists them. The bundled checkpoint is SHA-256 identical to the
-one the paper reports.
+Each tick, the client reports agent positions, needs and relationships. The server rebuilds a
+heterogeneous scene graph — agents, zones, objects, groups and active events — enumerates the
+candidate `(target, action)` pairs available to each agent, and the policy scores them. Structurally
+impossible options are masked before scoring, so an agent is never told to use an object that is
+full, disabled or unreachable.
 
-## Honest limits
+Instructions take a separate path. They are compiled against the live scene's actual capabilities
+into a persistent directive, so an instruction referring to something the scene does not contain is
+reported as unsupported rather than silently approximated. Once compiled, the directive persists
+across ticks until cleared.
 
-**A Python process must be running.** That is the trade this design makes. It cannot be shipped
-inside a built game, so it suits editor-time work, research and prototyping — not a title you
-release. A dependency-free C# port exists in prototype and reproduces the policy exactly, but it is
-not finished.
+---
 
-**Desktop only.** `ClientWebSocket` rules out WebGL, and the sidecar rules out mobile and console.
+## API reference
 
-**No art.** This is a director. Your agents keep their own visuals. The LPC character pipeline from
-the research project is deliberately not included: it is director-irrelevant and its assets are
-CC-BY-SA-3.0 / GPL-3.0, which would be inherited by anything shipping them.
+### `CrowdDirectorClient`
 
-**`PersonalityType`, not `AgentType`.** The scene generator renames `AgentType` freely between
-generations. Key your own logic on `PersonalityType`, which comes from a fixed vocabulary.
+| Member | Description |
+|---|---|
+| `RegisterAgent(ICrowdAgent)` | Add an agent to the directed crowd |
+| `UnregisterAgent(ICrowdAgent)` | Remove an agent and notify the server |
+| `GenerateScene(string)` | Build zones and agent types from a description |
+| `DescribeEvent(string)` | Issue a free-text instruction |
+| `TriggerEvent(string, string)` | `fire_alarm`, `closing_time`, `music_starts`, `new_arrival`, `all_clear` |
+| `ClearEvent()` | Cancel the active event and any standing orders |
+| `Connect()` / `Disconnect()` | Manage the connection manually |
+| `IsConnected`, `IsSceneReady`, `AgentCount` | State |
 
-**Needs are a closed set.** The nine fields on `CrowdNeeds` match `ecgp.vocab.NEEDS_V1` exactly.
-Renaming one silently drops it from every decision rather than raising.
+**Inspector:** `serverUrl`, `autoConnect`, `tickInterval` (default 3 s), `stateInterval`
+(default 1.5 s), `logActions`.
+
+**Events:** `Connected`, `Disconnected`, `SceneReady`, `ActionsReceived`, `ServerError`.
+
+### `ICrowdAgent`
+
+| Member | Description |
+|---|---|
+| `AgentId` | Stable unique identifier — required |
+| `AgentName` | Display name |
+| `AgentType` | Scene-specific role, e.g. `"barista"` |
+| `PersonalityType` | Fixed-vocabulary type, e.g. `"solo_worker"` |
+| `Position`, `CurrentZoneId`, `Needs` | Live state, reported each interval |
+| `EncounterCounts`, `Relationships`, `Friends` | Social state — return `null` to opt out |
+| `DirectorMoveToZone(zoneId, reason)` | Walk to a zone |
+| `DirectorGroupMove(zoneId, reason)` | Move as a group |
+| `DirectorStartConversation(targetId, reason)` | Approach and talk |
+| `DirectorRest(reason)` / `DirectorIdle(reason)` | Rest, or stand down |
+
+`AgentType` is regenerated for every scene; key your own logic on `PersonalityType`, which comes from
+a fixed vocabulary.
+
+### `CrowdNeeds`
+
+Nine `float` fields on a 0–100 scale — `hunger`, `thirst`, `bladder`, `energy`, `stress`,
+`loneliness`, `groupAffinity`, `status`, `curiosity`. High means pressing, except `energy`, where low
+means tired. `CrowdNeeds.Default` gives a reasonable starting point.
+
+---
+
+## Configuration
+
+The server reads its settings from the environment:
+
+| Variable | Default | Description |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | — | Enables scene generation and free-text instructions |
+| `ECGP_CKPT` | bundled | Path to the policy checkpoint |
+| `ECGP_TEMP` | `1.0` | Sampling temperature; lower is greedier |
+| `ECGP_SAMPLE` | `1` | Set `0` for deterministic arg-max selection |
+| `ECGP_AMBIENT` | `1` | Ambient world events (spills, deliveries, arrivals) |
+| `CROWDDIRECTOR_EVENTLOG` | `server/EventLog` | Audit trail and file-drop event inbox |
+
+---
+
+## Repository layout
+
+```
+server/          director server and the trained policy
+  ecgp/            graph policy, runtime and instruction compiler
+  dsag/            smart objects, affordances, needs
+  model/           the released checkpoint
+unity/           Unity client package (UPM)
+  Runtime/         ICrowdAgent, CrowdNeeds, CrowdDirectorClient
+```
