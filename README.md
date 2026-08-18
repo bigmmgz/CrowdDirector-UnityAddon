@@ -6,12 +6,11 @@ Natural-language crowd direction for Unity, powered by a trained relational grap
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
 
-![CrowdDirector directing a generated venue: four instructions and the crowd's response](docs/teaser.png)
+![A generated venue running under CrowdDirector, with the crowd gathered in the event hall](docs/screenshot.png)
 
-<sub>One generated venue, four instructions. Agents affected by each are ringed in amber, the target
-the instruction removed is marked in red, and the arrow is the response the policy chose — a crowd
-drawn to the event hall, drinkers rerouted off a broken machine, an audience gathering for a concert,
-and a queue forming for gallery souvenirs.</sub>
+<sub>A venue generated from one sentence: reception, event hall, food counter, reading room, music
+room, gallery and the rest, laid out gap-free. Every agent picks its own target each tick — here most
+of the crowd has converged on the event hall, while others read, browse the gallery or rest.</sub>
 
 Describe a space in a sentence and CrowdDirector lays out its zones and populates it. While it runs,
 type instructions at the crowd — *"the coffee machine is broken"*, *"staff leave first"* — and every
